@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Island</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    }
+
+    html, body {
+      background: transparent !important;
+      background-color: transparent !important;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Modern Apple Dikdörtgen Ada Kapsülü (Squircle) */
+    .island {
+      background: #000000;
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      /* iOS Yay / Spring Animasyonu - Akıcı ve Doğal */
+      transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                  height 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-radius 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                  background 0.3s ease;
+    }
+
+    /* 1. Bar Modu (İnce zarif üst çizgi) */
+    .island.bar {
+      width: 140px;
+      height: 6px;
+      border-radius: 0 0 5px 5px;
+      background: #3a3a3c;
+    }
+
+    /* 2. Kompakt Ada Modu (Daha Uzun Modern Dikdörtgen) */
+    .island.compact {
+      width: 360px;
+      height: 42px;
+      border-radius: 0 0 20px 20px;
+      padding: 0 18px;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    /* 3. Genişletilmiş Ada Modu (Geniş Dikdörtgen & Albüm Kapağı Alanı) */
+    .island.expanded {
+      width: 500px;
+      height: 195px;
+      border-radius: 0 0 24px 24px;
+      padding: 14px 22px;
+    }
+
+    /* 4. Oyun Modu */
+    .island.game-hidden {
+      width: 40px;
+      height: 2px;
+      opacity: 0.01;
+      border: none;
+    }
+
+    /* SVG İkon Yardımcısı */
+    .icon {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Kompakt İçerik */
+    .compact-content {
+      display: none;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .island.compact .compact-content {
+      display: flex;
+    }
+
+    .compact-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .compact-cover {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #1c1c1e;
+      display: none;
+    }
+    .compact-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: #f2f2f7;
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .compact-weather {
+      font-size: 13px;
+      font-weight: 600;
+      color: #64d2ff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Genişletilmiş İçerik */
+    .expanded-content {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+    }
+    .island.expanded .expanded-content {
+      display: flex;
+    }
+
+    .tabs-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #8e8e93;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: #ffffff;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .tab-body {
+      flex: 1;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      padding-top: 10px;
+    }
+
+    /* Gelişmiş Müzik Paneli */
+    .music-panel {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 18px;
+    }
+    .music-album-art {
+      width: 90px;
+      height: 90px;
+      border-radius: 12px;
+      background: #1c1c1e;
+      object-fit: cover;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #8e8e93;
+    }
+    .music-meta {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      text-align: left;
+    }
+    .music-title-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .music-artist-text {
+      font-size: 12px;
+      color: #8e8e93;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 12px;
+    }
+    .music-controls {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .ctrl-btn {
+      background: #1c1c1e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .ctrl-btn:hover {
+      background: #2c2c2e;
+      transform: scale(1.08);
+    }
+    .ctrl-btn.play {
+      width: 42px;
+      height: 42px;
+      background: #ffffff;
+      color: #000000;
+      border: none;
+    }
+    .ctrl-btn.play:hover {
+      background: #e5e5ea;
+    }
+
+    /* Hava Durumu Paneli */
+    .weather-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      text-align: center;
+    }
+    .weather-temp {
+      font-size: 28px;
+      font-weight: 700;
+      color: #64d2ff;
+      margin-bottom: 4px;
+    }
+    .weather-telemetry {
+      font-size: 11px;
+      color: #8e8e93;
+      margin-top: 6px;
+      display: flex;
+      gap: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="island" class="island bar">
+    <!-- Kompakt Görünüm -->
+    <div class="compact-content">
+      <div class="compact-left">
+        <img id="compact-cover" class="compact-cover" alt="Cover" />
+        <svg id="compact-icon" class="icon" style="color: #30d158;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        <span id="compact-title" class="compact-title">Müzik Algılanmadı</span>
+      </div>
+      <div class="compact-weather">
+        <svg class="icon" style="width:14px; height:14px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <span id="compact-temp">--°C</span>
+      </div>
+    </div>
+
+    <!-- Genişletilmiş Görünüm -->
+    <div class="expanded-content">
+      <div class="tabs-header">
+        <div>
+          <button class="tab-btn active" onclick="switchTab('music')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            Müzik
+          </button>
+          <button class="tab-btn" onclick="switchTab('weather')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+            Hava Durumu
+          </button>
+        </div>
+        <!-- BAĞIMSIZ SABİT PENCERE AÇAN AYARLAR BUTONU -->
+        <button class="tab-btn" onclick="openSettingsWindow()">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
+
+      <!-- Müzik Paneli -->
+      <div id="tab-music" class="tab-body">
+        <div class="music-panel">
+          <div id="music-cover-wrapper" class="music-album-art">
+            <svg id="music-placeholder-icon" class="icon" style="width:36px; height:36px;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            <img id="music-cover-img" style="width:100%; height:100%; border-radius:12px; object-fit:cover; display:none;" alt="Cover" />
+          </div>
+
+          <div class="music-meta">
+            <div id="music-title" class="music-title-text">Müzik Algılanmadı</div>
+            <div id="music-artist" class="music-artist-text">Spotify veya Tarayıcıda bir şarkı başlatın</div>
+
+            <div class="music-controls">
+              <button class="ctrl-btn" onclick="apiPrev()">
+                <svg class="icon" viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+              </button>
+              <button class="ctrl-btn play" onclick="apiPlayPause()">
+                <svg class="icon" style="fill:currentColor;" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </button>
+              <button class="ctrl-btn" onclick="apiNext()">
+                <svg class="icon" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hava Durumu Paneli -->
+      <div id="tab-weather" class="tab-body" style="display: none;">
+        <div class="weather-panel">
+          <div id="weather-city" style="font-size: 13px; color: #a1a1a6; font-weight: 500; margin-bottom: 2px;">📍 İstanbul</div>
+          <div id="weather-temp" class="weather-temp">12°C Açık</div>
+          <div id="weather-telemetry" class="weather-telemetry">
+            <span id="tel-feels">Hissedilen: 8°C</span>
+            <span id="tel-hum">Nem: %60</span>
+            <span id="tel-wind">Rüzgar: 24 km/s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { invoke } = window.__TAURI__.core;
+
+    const island = document.getElementById('island');
+    let currentMode = 'bar';
+    let inGame = false;
+    let hoverTimeout = null;
+    let collapseTimeout = null;
+
+    const SIZES = {
+      'bar': { w: 140, h: 6 },
+      'compact': { w: 360, h: 42 },
+      'expanded': { w: 500, h: 195 },
+      'game-hidden': { w: 40, h: 2 }
+    };
+
+    async function setMode(mode) {
+      if (currentMode === mode) return;
+      currentMode = mode;
+
+      const s = SIZES[mode] || SIZES['bar'];
+
+      if (mode === 'compact' || mode === 'expanded') {
+        try {
+          await invoke('set_island_size', { width: s.w, height: s.h });
+        } catch (e) {}
+        island.className = `island ${mode}`;
+      } else {
+        island.className = `island ${mode}`;
+        setTimeout(async () => {
+          if (currentMode === mode) {
+            try {
+              await invoke('set_island_size', { width: s.w, height: s.h });
+            } catch (e) {}
+          }
+        }, 360);
+      }
+    }
+
+    island.addEventListener('mouseenter', () => {
+      // Bekleyen kapanma zamanlayıcısını iptal et
+      if (collapseTimeout) {
+        clearTimeout(collapseTimeout);
+        collapseTimeout = null;
+      }
+
+      if (inGame) {
+        hoverTimeout = setTimeout(() => setMode('compact'), 3800);
+      } else {
+        if (currentMode === 'bar') {
+          setMode('compact');
+        }
+      }
+    });
+
+    island.addEventListener('mouseleave', () => {
+      clearTimeout(hoverTimeout);
+      if (collapseTimeout) clearTimeout(collapseTimeout);
+
+      // Genişletilmiş (expanded) moddayken hemen kapatma, tıklanmış olabilir
+      // Kompakt moddayken de kullanıcı fareyi ada üzerinde rahatça gezdirebilsin diye 800ms tampon süre ver
+      const delay = (currentMode === 'expanded') ? 1200 : 800;
+
+      collapseTimeout = setTimeout(() => {
+        if (inGame) {
+          setMode('game-hidden');
+        } else {
+          setMode('bar');
+        }
+      }, delay);
+    });
+
+    island.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      if (collapseTimeout) clearTimeout(collapseTimeout);
+
+      // Tıklamayla sadece bar modundan kompakta veya kompakttan genişletilmiş moda geçilir.
+      // Genişletilmiş moddayken tıklamayla kapanma kaldırıldı, sadece fare ayrıldığında kapanır.
+      if (currentMode === 'bar') {
+        setMode('compact');
+      } else if (currentMode === 'compact') {
+        setMode('expanded');
+      }
+    });
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('tab-music').style.display = (tab === 'music') ? 'flex' : 'none';
+      document.getElementById('tab-weather').style.display = (tab === 'weather') ? 'flex' : 'none';
+    }
+
+    function openSettingsWindow() {
+      invoke('open_settings_window');
+    }
+
+    function apiPlayPause() { invoke('media_play_pause'); }
+    function apiNext() { invoke('media_next'); }
+    function apiPrev() { invoke('media_prev'); }
+
+    async function checkMusic() {
+      try {
+        const m = await invoke('check_music');
+        const hasMusic = m.has_music;
+        
+        document.getElementById('compact-title').innerText = hasMusic ? `${m.artist ? m.artist + ' - ' : ''}${m.title}` : 'Müzik Algılanmadı';
+        
+        const compCover = document.getElementById('compact-cover');
+        const compIcon = document.getElementById('compact-icon');
+        if (hasMusic && m.cover_url) {
+          compCover.src = m.cover_url;
+          compCover.style.display = 'block';
+          compIcon.style.display = 'none';
+        } else {
+          compCover.style.display = 'none';
+          compIcon.style.display = 'block';
+        }
+
+        document.getElementById('music-title').innerText = m.title;
+        document.getElementById('music-artist').innerText = hasMusic ? (m.artist || m.app) : 'Spotify veya Tarayıcıda bir şarkı başlatın';
+
+        const coverImg = document.getElementById('music-cover-img');
+        const placeholder = document.getElementById('music-placeholder-icon');
+        if (hasMusic && m.cover_url) {
+          coverImg.src = m.cover_url;
+          coverImg.style.display = 'block';
+          placeholder.style.display = 'none';
+        } else {
+          coverImg.style.display = 'none';
+          placeholder.style.display = 'block';
+        }
+      } catch (e) {}
+    }
+
+    async function fetchWeather() {
+      try {
+        const w = await invoke('get_weather');
+        if (w.success) {
+          document.getElementById('compact-temp').innerText = w.temp;
+          document.getElementById('weather-city').innerText = `📍 ${w.city}`;
+          document.getElementById('weather-temp').innerText = `${w.temp} ${w.desc}`;
+          document.getElementById('tel-feels').innerText = w.feels_like;
+          document.getElementById('tel-hum').innerText = w.humidity;
+          document.getElementById('tel-wind').innerText = w.wind;
+        }
+      } catch (e) {}
+    }
+
+    async function checkGameMode() {
+      try {
+        const g = await invoke('check_game_mode');
+        if (g.in_game && !inGame) {
+          inGame = true;
+          setMode('game-hidden');
+        } else if (!g.in_game && inGame) {
+          inGame = false;
+          setMode('bar');
+        }
+      } catch (e) {}
+    }
+
+    setInterval(checkMusic, 1500);
+    setInterval(checkGameMode, 1500);
+    setInterval(fetchWeather, 300000);
+    fetchWeather();
+    checkMusic();
+  </script>
+</body>
+</html>

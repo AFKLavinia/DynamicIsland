@@ -1,6 +1,5 @@
 @echo off
-title Dynamic Island
-cd /d "%~dp0"
+title Dynamic Island (Rust Engine)
+cd /d "%~dp0tauri-island\src-tauri\target\debug"
 echo Dynamic Island baslatiliyor...
-python app.py
-pause
+start "" "tauri-island.exe"
