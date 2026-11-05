@@ -1,0 +1,18 @@
+{
+  "manual_games": [
+    "cs2.exe",
+    "valorant.exe",
+    "gta5.exe",
+    "rdr2.exe",
+    "cyberpunk2077.exe",
+    "witcher3.exe",
+    "dota2.exe",
+    "league of legends.exe"
+  ],
+  "game_mode_enabled": true,
+  "hover_delay_seconds": 3.5,
+  "city": "İstanbul",
+  "lat": 41.0082,
+  "lon": 28.9784,
+  "auto_location": true
+}
