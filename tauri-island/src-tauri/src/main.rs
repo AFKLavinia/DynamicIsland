@@ -1,7 +1,14 @@
 #![windows_subsystem = "windows"]
 
-mod commands;
+mod models;
+mod utils;
+mod audio;
+mod window;
+mod weather;
+mod media;
+mod app;
+pub mod commands;
 
 fn main() {
-    commands::run_app();
+    app::run_app();
 }

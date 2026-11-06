@@ -1,0 +1,163 @@
+// ---------------------------------------------------------------------------
+// Hava Durumu Modülü (SVG Vektör Haritası & Ham Veri Görselleştirici)
+// ---------------------------------------------------------------------------
+
+let cachedWeather = null;
+window.cachedWeather = null;
+
+const WEATHER_ICONS = {
+  sun: '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>',
+  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>',
+  partly: '<path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41M15.947 12.65a4 4 0 0 0-5.925-4.128"></path><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6z"></path>',
+  cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>',
+  rain: '<path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24"></path><path d="M16 14v6M8 14v6M12 16v6"></path>',
+  snow: '<path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path><path d="M8 16h.01M8 20h.01M12 18h.01M12 22h.01M16 16h.01M16 20h.01"></path>',
+  thunder: '<path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"></path><path d="M13 11l-4 6h6l-4 6"></path>',
+  fog: '<path d="M4 14h16M4 10h16M6 18h12M6 6h12"></path>'
+};
+
+const WEATHER_ICON_COLORS = {
+  sun: '#ffd60a', moon: '#c7d2fe', partly: '#ffd60a', cloud: '#98989d',
+  rain: '#64d2ff', snow: '#ffffff', thunder: '#ffd60a', fog: '#aeaeb2'
+};
+
+function weatherKind(code, night) {
+  const c = parseInt(code, 10);
+  if (isNaN(c)) return null;
+
+  // Fırtına / Thunder (WMO 95, 96, 99; wttr 200, 386, 389, 392, 395)
+  if ([95, 96, 99, 200, 386, 389, 392, 395].includes(c)) return 'thunder';
+
+  // Kar / Snow (WMO 71..77, 85, 86; wttr 179, 182, 227, 230, 317..338, 350, 362..377)
+  if ([71, 73, 75, 77, 85, 86, 179, 182, 227, 230, 317, 320, 323, 326, 329, 332, 335, 338, 350, 362, 365, 368, 371, 374, 377].includes(c)) return 'snow';
+
+  // Sis / Fog (WMO 45, 48; wttr 143, 248, 260)
+  if ([45, 48, 143, 248, 260].includes(c)) return 'fog';
+
+  // Açık / Güneşli / Gece Ayı (WMO 0; wttr 113)
+  if (c === 0 || c === 113) return night ? 'moon' : 'sun';
+
+  // Parçalı Bulutlu (WMO 1, 2; wttr 116)
+  if (c === 1 || c === 2 || c === 116) return 'partly';
+
+  // Bulutlu / Kapalı (WMO 3; wttr 119, 122)
+  if (c === 3 || c === 119 || c === 122) return 'cloud';
+
+  // Yağmur / Sağanak (WMO 51..67, 80..82; wttr diğerleri)
+  return 'rain';
+}
+
+function weatherSvg(code, night, px) {
+  const kind = weatherKind(code, night);
+  if (!kind) return '';
+  return `<svg class="icon" style="width:${px}px; height:${px}px; color:${WEATHER_ICON_COLORS[kind]};" viewBox="0 0 24 24">${WEATHER_ICONS[kind]}</svg>`;
+}
+
+// Compact Mod: Günün Derece Aralığı & Canlı Telemetri Pili (Option A)
+function updateCompactWeatherSummary() {
+  const iconEl = document.getElementById('cws-icon');
+  const rangeEl = document.getElementById('cws-range');
+  const telemEl = document.getElementById('cws-telemetry');
+  if (!cachedWeather || !cachedWeather.success) {
+    if (iconEl) iconEl.innerHTML = weatherSvg('1', false, 18);
+    setText('cws-location', 'Hava Durumu');
+    setText('cws-desc', 'Alınıyor...');
+    setText('cws-temp', '');
+    if (rangeEl) rangeEl.style.display = 'none';
+    if (telemEl) telemEl.style.display = 'none';
+    return;
+  }
+  if (iconEl) iconEl.innerHTML = weatherSvg(cachedWeather.code, cachedWeather.night, 18);
+  setText('cws-location', cachedWeather.location || 'Konum');
+  setText('cws-desc', cachedWeather.desc || 'Açık');
+  setText('cws-temp', cachedWeather.temp_c ? `${cachedWeather.temp_c}°C` : '');
+
+  // Günün Derece Aralığı
+  if (rangeEl) {
+    if (cachedWeather.today_max_c && cachedWeather.today_min_c) {
+      rangeEl.innerHTML = `<span class="arrow-up">↑</span> ${cachedWeather.today_max_c}°<span class="range-sep">·</span><span class="arrow-down">↓</span> ${cachedWeather.today_min_c}°`;
+      rangeEl.style.display = 'inline-flex';
+    } else if (cachedWeather.feels_c) {
+      rangeEl.innerHTML = `<span>Hiss. ${cachedWeather.feels_c}°</span>`;
+      rangeEl.style.display = 'inline-flex';
+    } else {
+      rangeEl.style.display = 'none';
+    }
+  }
+
+  // Canlı İkincil Telemetri (Option A)
+  if (telemEl) {
+    if (cachedWeather.humidity) {
+      telemEl.innerHTML = `<span>💧 %${cachedWeather.humidity}</span>`;
+      telemEl.style.display = 'inline-flex';
+    } else if (cachedWeather.wind_kmh) {
+      telemEl.innerHTML = `<span>💨 ${cachedWeather.wind_kmh}km/s</span>`;
+      telemEl.style.display = 'inline-flex';
+    } else {
+      telemEl.style.display = 'none';
+    }
+  }
+}
+
+function clearWeather() {
+  cachedWeather = null;
+  window.cachedWeather = null;
+  ['compact-temp', 'cws-location', 'cws-desc', 'cws-temp', 'cws-range', 'cws-telemetry', 'weather-location', 'weather-temp', 'weather-desc', 'tel-1', 'tel-2', 'tel-3']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = ''; });
+  ['compact-weather-icon', 'cws-icon', 'weather-icon-container', 'weather-forecast']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+  const rangeEl = document.getElementById('cws-range');
+  if (rangeEl) rangeEl.style.display = 'none';
+  const telemEl = document.getElementById('cws-telemetry');
+  if (telemEl) telemEl.style.display = 'none';
+}
+
+function renderWeather(w) {
+  if (!w || !w.success) return;
+  cachedWeather = w;
+  window.cachedWeather = w;
+  setText('compact-temp', w.temp_c ? `${w.temp_c}°C` : '');
+  const cwi = document.getElementById('compact-weather-icon');
+  if (cwi) cwi.innerHTML = weatherSvg(w.code, w.night, 14);
+
+  // Kompakt ön izleme özetini daima hazır tut
+  updateCompactWeatherSummary();
+
+  setText('weather-location', w.location || '');
+  setText('weather-temp', w.temp_c ? `${w.temp_c}°C` : '');
+  setText('weather-desc', w.desc || '');
+  document.getElementById('weather-icon-container').innerHTML = weatherSvg(w.code, w.night, 52);
+
+  setText('tel-1', w.feels_c ? `Hissedilen ${w.feels_c}°C · Nem %${w.humidity || 0}` : '');
+  setText('tel-2', w.wind_kmh ? `Rüzgar ${w.wind_kmh} km/sa ${w.wind_dir || ''}` : '');
+  setText('tel-3', w.pressure_mb ? `Basınç ${w.pressure_mb} hPa · UV ${w.uv || 0}` : '');
+
+  document.getElementById('weather-forecast').innerHTML = (w.forecast || []).map(d => {
+    let day = '';
+    try {
+      const dt = new Date(d.date + 'T12:00:00');
+      day = isNaN(dt.getTime()) ? d.date : dt.toLocaleDateString('tr-TR', { weekday: 'short' });
+    } catch (e) { day = d.date; }
+    const safeDesc = (d.desc || '').replace(/"/g, '&quot;');
+    return `<div class="fc-day" title="${safeDesc}">
+      <span>${day}</span>
+      ${weatherSvg(d.code, false, 22)}
+      <b>${d.max_c ? d.max_c + '°' : ''}</b>
+      <span>${d.min_c ? d.min_c + '°' : ''}</span>
+    </div>`;
+  }).join('');
+}
+
+async function refreshWeather() {
+  try {
+    const w = await invoke('get_weather');
+    if (w && w.success) {
+      renderWeather(w);
+    }
+  } catch (e) {}
+}
+
+window.updateCompactWeatherSummary = updateCompactWeatherSummary;
+window.clearWeather = clearWeather;
+window.renderWeather = renderWeather;
+window.refreshWeather = refreshWeather;

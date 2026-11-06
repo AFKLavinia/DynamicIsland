@@ -107,10 +107,11 @@
   <div class="section">
     <div class="section-title">Konum & Hava Durumu</div>
     <div class="input-group">
-      <input type="text" id="city-input" placeholder="Şehir veya ilçe adı (Örn: Kadıköy, İzmir, Ankara)">
+      <input type="text" id="city-input" placeholder="Şehir veya ilçe adı (boş bırakırsan konum otomatik bulunur)">
       <button class="btn" onclick="saveCity()">Kaydet</button>
     </div>
-    <div id="status-msg" class="status-text">✓ Konum başarıyla kaydedildi!</div>
+    <div id="auto-note" class="status-text" style="display:block; color:#8e8e93;"></div>
+    <div id="status-msg" class="status-text">Konum kaydedildi.</div>
   </div>
 
   <div class="section">
@@ -126,21 +127,33 @@
     async function loadCurrentCity() {
       try {
         const w = await invoke('get_weather');
-        if (w.city) {
-          document.getElementById('city-input').value = w.city;
-        }
+        // query: kullanıcının kaydettiği konum (boşsa otomatik konum kullanılıyor demektir)
+        document.getElementById('city-input').value = w.query || '';
+        document.getElementById('auto-note').textContent =
+          w.query ? '' : (w.location ? `Otomatik konum: ${w.location}` : '');
       } catch (e) {}
     }
 
     async function saveCity() {
       const city = document.getElementById('city-input').value.trim();
-      if (city) {
+      const msg = document.getElementById('status-msg');
+      try {
         await invoke('set_city', { city });
-        const msg = document.getElementById('status-msg');
+        msg.textContent = 'Konum kaydedildi.';
+        msg.style.color = '#30d158';
         msg.style.display = 'block';
-        setTimeout(() => msg.style.display = 'none', 3000);
+      } catch (err) {
+        msg.textContent = 'Kayıt başarısız: ' + err;
+        msg.style.color = '#ff453a';
+        msg.style.display = 'block';
       }
+      setTimeout(() => msg.style.display = 'none', 3000);
+      loadCurrentCity();
     }
+
+    document.getElementById('city-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') saveCity();
+    });
 
     loadCurrentCity();
   </script>

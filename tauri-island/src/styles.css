@@ -1,112 +1,709 @@
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #ffe21c);
-}
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-.container {
+* {
+  box-sizing: border-box;
   margin: 0;
-  padding-top: 10vh;
+  padding: 0;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+}
+
+html, body {
+  background: transparent !important;
+  background-color: transparent !important;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Modern Apple Dikdörtgen Ada Kapsülü (Squircle) */
+.island {
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
+  cursor: default;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  position: relative;
+  will-change: width, height, border-radius;
+  transform: translateZ(0);
+
+  /* iOS Yay / Spring Animasyonu - Akıcı ve Doğal */
+  transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.3s ease;
+}
+
+/* 1. Bar Modu (İnce zarif üst çizgi) */
+.island.bar {
+  width: 140px;
+  height: 6px;
+  border-radius: 0 0 5px 5px;
+  background: #3a3a3c;
+}
+
+/* 2. Kompakt Ada Modu (Daha Uzun Modern Dikdörtgen) */
+.island.compact {
+  width: 440px;
+  height: 44px;
+  border-radius: 0 0 22px 22px;
+  padding: 0 16px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* 3. Genişletilmiş Ada Modu (Geniş Dikdörtgen & Albüm Kapağı Alanı) */
+.island.expanded {
+  width: 520px;
+  height: 220px;
+  border-radius: 0 0 26px 26px;
+  padding: 14px 22px;
+}
+
+/* 4. Oyun Modu */
+.island.game-hidden {
+  width: 40px;
+  height: 2px;
+  opacity: 0.01;
+  border: none;
+}
+
+/* SVG İkon Yardımcısı */
+.icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Kompakt İçerik */
+.compact-content {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+.island.compact .compact-content {
+  display: flex;
+}
+
+.compact-subbox {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.compact-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+.compact-cover {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #1c1c1e;
+  display: none;
+  flex-shrink: 0;
+}
+.compact-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #f2f2f7;
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.compact-weather {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64d2ff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Müzik Yokken Fare Ön İzlemesi: Hava Durumu Özeti */
+.cws-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  overflow: hidden;
+  flex-shrink: 0;
+  max-width: 155px;
+}
+.cws-location {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f2f2f7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Compact Mod Seçenek 2: Günün Derece Aralığı & Hissedilen */
+.cws-range {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #a1a1a6;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  flex-shrink: 0;
+}
+.cws-range .arrow-up { color: #ff9f0a; font-weight: 700; }
+.cws-range .arrow-down { color: #64d2ff; font-weight: 700; }
+.cws-range .range-sep { opacity: 0.35; margin: 0 1px; }
+
+/* Option A: Canlı İkincil Telemetri Pili (Nem / Rüzgar) */
+.cws-telemetry {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64d2ff;
+  background: rgba(100, 210, 255, 0.1);
+  border: 1px solid rgba(100, 210, 255, 0.18);
+  padding: 2px 7px;
+  border-radius: 12px;
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+  flex-shrink: 0;
+}
+
+/* Option A/B: Kompakt Ön İzleme Hızlı Spotify Başlatıcı Pili */
+.cws-quick-music-btn {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  text-align: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(29, 185, 84, 0.16);
+  border: 1px solid rgba(29, 185, 84, 0.32);
+  color: #1db954;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+.cws-quick-music-btn:hover {
+  background: #1db954;
+  color: #000000;
+  transform: scale(1.08);
+  border-color: #1db954;
+}
+.cws-quick-music-btn:active {
+  transform: scale(0.94);
+}
+.cws-quick-music-btn svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
+.cws-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.cws-desc {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8e8e93;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cws-temp {
+  font-size: 14px;
+  font-weight: 700;
+  color: #64d2ff;
 }
 
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
+.spotify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  background: #1db954;
+  color: #000000;
+  border: none;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  width: fit-content;
+  transition: all 0.2s ease;
+}
+.spotify-btn:hover {
+  background: #1ed760;
+  transform: scale(1.03);
+}
+.spotify-btn:active {
+  transform: scale(0.97);
+}
+.spotify-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #000000;
 }
 
-.row {
+/* Option B: Boş Ekranda Hızlı Medya Başlatıcı Hub */
+.launcher-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+.launcher-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.launcher-btn.spotify {
+  background: #1db954;
+  color: #000000;
+}
+.launcher-btn.spotify:hover {
+  background: #1ed760;
+  transform: translateY(-1px) scale(1.03);
+}
+.launcher-btn.ytmusic {
+  background: #ff0000;
+  color: #ffffff;
+}
+.launcher-btn.ytmusic:hover {
+  background: #ff3333;
+  transform: translateY(-1px) scale(1.03);
+}
+.launcher-btn:active {
+  transform: scale(0.96);
+}
+.launcher-btn svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+
+/* Genişletilmiş İçerik */
+.expanded-content {
+  display: none;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+.island.expanded .expanded-content {
+  display: flex;
+}
+
+/* Feature 1: Ambient Dynamic Glow Arka Plan Efekti */
+.ambient-glow {
+  position: absolute;
+  top: -35px;
+  left: -35px;
+  right: -35px;
+  bottom: -35px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(50px) saturate(160%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-image 0.5s ease;
+  border-radius: 28px;
+}
+
+.tabs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  color: #8e8e93;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  color: #ffffff;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tab-body {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  padding-top: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Gelişmiş Müzik Paneli */
+.music-panel {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 18px;
+}
+.music-album-art {
+  width: 105px;
+  height: 105px;
+  border-radius: 14px;
+  background: #1c1c1e;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
+  align-items: center;
+  color: #8e8e93;
+  overflow: hidden;
+  position: relative;
 }
-
-a {
+.music-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-align: left;
+}
+.music-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 2px;
+}
+/* Feature 3: Platform Rozeti (Badge) */
+.source-badge {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #8e8e93;
+  width: fit-content;
+  letter-spacing: 0.2px;
+}
+.source-badge svg {
+  flex-shrink: 0;
+}
+/* Feature 5: Canlı Audio Spectrum / Visualizer */
+.music-visualizer {
+  display: none;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 16px;
+  padding: 0 4px;
+}
+.music-visualizer span {
+  width: 3px;
+  height: 3px;
+  background: #1db954;
+  border-radius: 2px;
+  transition: height 0.2s ease, background 0.3s ease;
+}
+.music-visualizer.playing span {
+  animation: bounceVisualizer 1.1s ease-in-out infinite alternate;
+}
+.music-visualizer.playing span:nth-child(1) { animation-duration: 0.75s; animation-delay: 0.05s; }
+.music-visualizer.playing span:nth-child(2) { animation-duration: 1.05s; animation-delay: 0.25s; }
+.music-visualizer.playing span:nth-child(3) { animation-duration: 0.65s; animation-delay: 0.1s; }
+.music-visualizer.playing span:nth-child(4) { animation-duration: 1.25s; animation-delay: 0.35s; }
+.music-visualizer.playing span:nth-child(5) { animation-duration: 0.85s; animation-delay: 0.15s; }
+.music-visualizer.playing span:nth-child(6) { animation-duration: 1.15s; animation-delay: 0.4s; }
+.music-visualizer.playing span:nth-child(7) { animation-duration: 0.7s; animation-delay: 0.2s; }
+.music-visualizer.playing span:nth-child(8) { animation-duration: 0.95s; animation-delay: 0.3s; }
+@keyframes bounceVisualizer {
+  0% { height: 3px; }
+  30% { height: 14px; }
+  65% { height: 7px; }
+  100% { height: 16px; }
+}
+.music-title-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 1px;
+}
+.music-artist-text {
+  font-size: 12px;
+  color: #8e8e93;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+/* Feature 4: Parça Zaman Çizelgesi (Track Progress Bar) */
+.track-progress-row {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 3px 0 8px 0;
+}
+.time-label {
+  font-size: 10px;
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: #8e8e93;
+  font-variant-numeric: tabular-nums;
+  min-width: 26px;
+}
+.track-progress-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+  position: relative;
+}
+.track-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #ffffff;
+  border-radius: 2px;
+  transition: width 0.25s linear;
 }
 
-a:hover {
-  color: #535bf2;
+.music-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
 }
-
-h1 {
-  text-align: center;
+.music-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
+.ctrl-btn {
+  background: #1c1c1e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+}
+.ctrl-btn:hover {
+  background: #2c2c2e;
+  transform: scale(1.08);
+}
+.ctrl-btn.play {
+  width: 38px;
+  height: 38px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+}
+.ctrl-btn.play:hover {
+  background: #e5e5ea;
 }
 
-button:hover {
-  border-color: #396cd8;
+/* Feature 2: iOS Tarzı Ses Kaydırıcı (Volume Slider) */
+.volume-row {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  max-width: 130px;
 }
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
+.vol-icon-btn {
+  background: none;
+  border: none;
+  color: #8e8e93;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+.vol-icon-btn:hover {
+  color: #ffffff;
+}
+.vol-slider-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 3px;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+.vol-slider-fill {
+  height: 100%;
+  width: 70%;
+  background: #ffffff;
+  border-radius: 3px;
+  transition: width 0.15s ease;
 }
 
-input,
-button {
-  outline: none;
+/* Hava Durumu Paneli */
+.weather-panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
 }
-
-#greet-input {
-  margin-right: 5px;
+.weather-icon-box {
+  width: 86px;
+  height: 86px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 30% 30%, rgba(100, 210, 255, 0.15), rgba(28, 28, 30, 0.6));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
-
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
+.weather-icon-box svg {
+  width: 52px;
+  height: 52px;
+}
+.weather-info-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+.weather-city-label {
+  font-size: 12px;
+  color: #8e8e93;
+  font-weight: 500;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+}
+.weather-city-label span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.weather-temp-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+  max-width: 100%;
+}
+.weather-temp {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+}
+.weather-desc-badge {
+  font-size: 12px;
+  color: #64d2ff;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.weather-line {
+  font-size: 11px;
+  color: #8e8e93;
+  line-height: 1.45;
+  white-space: nowrap;
+}
+.forecast {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.fc-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 52px;
+  padding: 8px 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 10px;
+  color: #8e8e93;
+}
+.fc-day svg {
+  width: 22px;
+  height: 22px;
+}
+.fc-day b {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
 }
