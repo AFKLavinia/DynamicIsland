@@ -27,18 +27,15 @@ html, body {
   box-shadow: none;
   cursor: default;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   position: relative;
   will-change: width, height, border-radius;
   transform: translateZ(0);
 
   /* iOS Yay / Spring Animasyonu - Akıcı ve Doğal */
-  transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-              border-radius 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.3s ease;
+  transition: width 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.25s ease;
 }
 
 /* 1. Bar Modu (İnce zarif üst çizgi) */
@@ -54,9 +51,7 @@ html, body {
   width: 440px;
   height: 44px;
   border-radius: 0 0 22px 22px;
-  padding: 0 16px;
-  flex-direction: row;
-  justify-content: space-between;
+  background: #000000;
 }
 
 /* 3. Genişletilmiş Ada Modu (Geniş Dikdörtgen & Albüm Kapağı Alanı) */
@@ -64,7 +59,7 @@ html, body {
   width: 520px;
   height: 220px;
   border-radius: 0 0 26px 26px;
-  padding: 14px 22px;
+  background: #000000;
 }
 
 /* 4. Oyun Modu */
@@ -88,16 +83,29 @@ html, body {
   vertical-align: middle;
 }
 
-/* Kompakt İçerik */
+/* Kompakt İçerik - Sabit 440x44 Geometri, Asla Ezilmez/Wrap Yapmaz */
 .compact-content {
-  display: none;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 440px;
+  height: 44px;
+  padding: 0 16px;
+  display: flex;
   align-items: center;
   justify-content: space-between;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), filter 0.18s ease-out;
+  filter: blur(4px);
+  will-change: opacity, filter;
+  z-index: 2;
 }
 .island.compact .compact-content {
-  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+  filter: blur(0px);
 }
 
 .compact-subbox {
@@ -322,17 +330,41 @@ html, body {
   fill: currentColor;
 }
 
-/* Genişletilmiş İçerik */
+/* Genişletilmiş İçerik - Sabit 520x220 Geometri, Asla Ezilmez/Wrap Yapmaz */
 .expanded-content {
-  display: none;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 520px;
+  height: 220px;
+  padding: 14px 22px;
+  display: flex;
   flex-direction: column;
-  position: relative;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), filter 0.22s ease-out;
+  filter: blur(6px);
+  will-change: opacity, filter;
   z-index: 1;
 }
 .island.expanded .expanded-content {
-  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+  filter: blur(0px);
+}
+
+/* Kapanırken (Collapsing) İçeriklerin İpeksi Kararması & Flicker Önleyici */
+.island.collapsing .compact-content,
+.island.collapsing .expanded-content {
+  opacity: 0 !important;
+  filter: blur(4px) !important;
+  pointer-events: none !important;
+  transition: opacity 0.12s ease-out, filter 0.12s ease-out !important;
+}
+.island.collapsing .ambient-glow {
+  opacity: 0 !important;
+  transition: opacity 0.12s ease-out !important;
 }
 
 /* Feature 1: Ambient Dynamic Glow Arka Plan Efekti */
@@ -583,7 +615,16 @@ html, body {
   align-items: center;
   gap: 6px;
   flex: 1;
-  max-width: 130px;
+  max-width: 145px;
+}
+.vol-percent-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8e8e93;
+  font-variant-numeric: tabular-nums;
+  min-width: 28px;
+  text-align: right;
+  letter-spacing: -0.2px;
 }
 .vol-icon-btn {
   background: none;

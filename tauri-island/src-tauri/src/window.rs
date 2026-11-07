@@ -73,7 +73,7 @@ pub fn set_island_size(width: u32, height: u32, window: tauri::Window) -> Result
 
         #[cfg(target_os = "windows")]
         {
-            use windows::Win32::UI::WindowsAndMessaging::{SetWindowPos, SWP_NOACTIVATE, SWP_NOZORDER};
+            use windows::Win32::UI::WindowsAndMessaging::{SetWindowPos, SWP_NOACTIVATE, SWP_NOZORDER, SWP_NOCOPYBITS};
             use windows::Win32::Foundation::HWND;
 
             if let Ok(hwnd) = window.hwnd() {
@@ -85,7 +85,7 @@ pub fn set_island_size(width: u32, height: u32, window: tauri::Window) -> Result
                         target_phys_y as i32,
                         target_phys_w as i32,
                         target_phys_h as i32,
-                        SWP_NOACTIVATE | SWP_NOZORDER,
+                        SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOCOPYBITS,
                     );
                 }
                 return Ok(());

@@ -149,6 +149,8 @@ async function checkMusic() {
       setDisplay('compact-weather-box', 'none');
       const compactTitle = [m.artist, m.title].filter(Boolean).join(' - ');
       setText('compact-title', compactTitle);
+      const ctEl = document.getElementById('compact-title');
+      if (ctEl && ctEl.title !== compactTitle) ctEl.title = compactTitle;
     } else {
       setDisplay('compact-music-box', 'none');
       setDisplay('compact-weather-box', 'flex');
@@ -183,16 +185,28 @@ async function checkMusic() {
       // Feature 3: Platform Rozeti (Badge)
       const badge = detectSource(m.app, m.title);
       if (badgeEl && badgeIcon && badgeName) {
-        badgeEl.style.color = badge.color;
-        badgeEl.style.background = badge.bg;
-        badgeIcon.innerHTML = badge.svg;
-        badgeName.textContent = badge.name;
+        if (badgeEl.dataset.name !== badge.name) {
+          badgeEl.dataset.name = badge.name;
+          badgeEl.style.color = badge.color;
+          badgeEl.style.background = badge.bg;
+          if (window.setHtml) {
+            window.setHtml(badgeIcon, badge.svg);
+          } else {
+            badgeIcon.innerHTML = badge.svg;
+          }
+          badgeName.textContent = badge.name;
+        }
         badgeEl.style.display = 'inline-flex';
       }
 
       setText('music-title', m.title || '');
+      const mtEl = document.getElementById('music-title');
+      if (mtEl && mtEl.title !== (m.title || '')) mtEl.title = m.title || '';
+
       const cleanArtist = (m.artist && m.artist.trim().length > 0) ? m.artist.trim() : (badge.name || '');
       setText('music-artist', cleanArtist);
+      const maEl = document.getElementById('music-artist');
+      if (maEl && maEl.title !== cleanArtist) maEl.title = cleanArtist;
 
       if (m.cover_changed) {
         const cover = m.cover_url || '';
@@ -229,8 +243,11 @@ async function checkMusic() {
         } else {
           vis.classList.remove('playing');
         }
-        const visBars = vis.querySelectorAll('span');
-        visBars.forEach(b => b.style.background = badge.color);
+        if (vis.dataset.color !== badge.color) {
+          vis.dataset.color = badge.color;
+          const visBars = vis.querySelectorAll('span');
+          visBars.forEach(b => b.style.background = badge.color);
+        }
       }
 
       // Feature 4: Zaman Çizelgesi (Track Timeline Progress) & Drift Düzeltme

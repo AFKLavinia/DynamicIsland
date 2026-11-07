@@ -29,7 +29,7 @@ async function initLocationPicker() {
             const opt = document.createElement('option');
             opt.value = p.name; // Örn: Osmaniye, Adana, İstanbul
             opt.dataset.file = p.file;
-            opt.dataset.plate = p.plate;
+            opt.dataset.plate = p.plaka || p.plate || '';
             ilDatalist.appendChild(opt);
         });
 

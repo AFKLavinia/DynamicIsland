@@ -60,9 +60,10 @@ function updateCompactWeatherSummary() {
   const telemEl = document.getElementById('cws-telemetry');
   const t = window.t || ((k) => k);
   const i18n = window.i18n;
+  const setHtml = window.setHtml || ((el, h) => { if (el && el.innerHTML !== h) el.innerHTML = h; });
 
   if (!cachedWeather || !cachedWeather.success) {
-    if (iconEl) iconEl.innerHTML = weatherSvg('1', false, 18);
+    if (iconEl) setHtml(iconEl, weatherSvg('1', false, 18));
     setText('cws-location', t('island.weather.default_loc'));
     setText('cws-desc', t('island.weather.loading'));
     setText('cws-temp', '');
@@ -70,7 +71,7 @@ function updateCompactWeatherSummary() {
     if (telemEl) telemEl.style.display = 'none';
     return;
   }
-  if (iconEl) iconEl.innerHTML = weatherSvg(cachedWeather.code, cachedWeather.night, 18);
+  if (iconEl) setHtml(iconEl, weatherSvg(cachedWeather.code, cachedWeather.night, 18));
   setText('cws-location', cachedWeather.location || t('island.weather.default_loc'));
   const desc = i18n ? i18n.getWeatherDesc(cachedWeather.code, cachedWeather.desc) : (cachedWeather.desc || t('island.weather.default_desc'));
   setText('cws-desc', desc);
@@ -79,11 +80,11 @@ function updateCompactWeatherSummary() {
   // Günün Derece Aralığı
   if (rangeEl) {
     if (cachedWeather.today_max_c && cachedWeather.today_min_c) {
-      rangeEl.innerHTML = `<span class="arrow-up">↑</span> ${cachedWeather.today_max_c}°<span class="range-sep">·</span><span class="arrow-down">↓</span> ${cachedWeather.today_min_c}°`;
+      setHtml(rangeEl, `<span class="arrow-up">↑</span> ${cachedWeather.today_max_c}°<span class="range-sep">·</span><span class="arrow-down">↓</span> ${cachedWeather.today_min_c}°`);
       rangeEl.style.display = 'inline-flex';
     } else if (cachedWeather.feels_c) {
       const feelsText = t('island.weather.feels_short', { temp: cachedWeather.feels_c });
-      rangeEl.innerHTML = `<span>${feelsText}</span>`;
+      setHtml(rangeEl, `<span>${feelsText}</span>`);
       rangeEl.style.display = 'inline-flex';
     } else {
       rangeEl.style.display = 'none';
@@ -94,11 +95,11 @@ function updateCompactWeatherSummary() {
   if (telemEl) {
     if (cachedWeather.humidity) {
       rangeEl.style.display = 'inline-flex';
-      telemEl.innerHTML = `<span>💧 %${cachedWeather.humidity}</span>`;
+      setHtml(telemEl, `<span>💧 %${cachedWeather.humidity}</span>`);
       telemEl.style.display = 'inline-flex';
     } else if (cachedWeather.wind_kmh) {
       const windShort = t('island.weather.wind_short', { speed: cachedWeather.wind_kmh });
-      telemEl.innerHTML = `<span>💨 ${windShort}</span>`;
+      setHtml(telemEl, `<span>💨 ${windShort}</span>`);
       telemEl.style.display = 'inline-flex';
     } else {
       telemEl.style.display = 'none';
@@ -125,10 +126,11 @@ function renderWeather(w) {
   window.cachedWeather = w;
   const t = window.t || ((k) => k);
   const i18n = window.i18n;
+  const setHtml = window.setHtml || ((el, h) => { if (el && el.innerHTML !== h) el.innerHTML = h; });
 
   setText('compact-temp', w.temp_c ? `${w.temp_c}°C` : '');
   const cwi = document.getElementById('compact-weather-icon');
-  if (cwi) cwi.innerHTML = weatherSvg(w.code, w.night, 14);
+  if (cwi) setHtml(cwi, weatherSvg(w.code, w.night, 14));
 
   // Kompakt ön izleme özetini daima hazır tut
   updateCompactWeatherSummary();
@@ -137,14 +139,15 @@ function renderWeather(w) {
   setText('weather-location', w.location || '');
   setText('weather-temp', w.temp_c ? `${w.temp_c}°C` : '');
   setText('weather-desc', weatherDesc);
-  document.getElementById('weather-icon-container').innerHTML = weatherSvg(w.code, w.night, 52);
+  const wic = document.getElementById('weather-icon-container');
+  if (wic) setHtml(wic, weatherSvg(w.code, w.night, 52));
 
   const windDir = i18n ? i18n.formatWindDir(w.wind_dir) : (w.wind_dir || '');
   setText('tel-1', w.feels_c ? `${t('island.weather.feels_like', { temp: w.feels_c })} · ${t('island.weather.humidity', { hum: w.humidity || 0 })}` : '');
   setText('tel-2', w.wind_kmh ? t('island.weather.wind', { speed: w.wind_kmh, dir: windDir }) : '');
   setText('tel-3', w.pressure_mb ? `${t('island.weather.pressure', { press: w.pressure_mb })} · ${t('island.weather.uv', { uv: w.uv || 0 })}` : '');
 
-  document.getElementById('weather-forecast').innerHTML = (w.forecast || []).map(d => {
+  const fcHtml = (w.forecast || []).map(d => {
     const day = i18n ? i18n.formatDayName(d.date) : d.date;
     const dayDesc = i18n ? i18n.getWeatherDesc(d.code, d.desc) : (d.desc || '');
     const safeDesc = dayDesc.replace(/"/g, '&quot;');
@@ -155,6 +158,8 @@ function renderWeather(w) {
       <span>${d.min_c ? d.min_c + '°' : ''}</span>
     </div>`;
   }).join('');
+  const fcEl = document.getElementById('weather-forecast');
+  if (fcEl) setHtml(fcEl, fcHtml);
 }
 
 async function refreshWeather() {

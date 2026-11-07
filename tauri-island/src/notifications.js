@@ -34,19 +34,20 @@ function renderNotificationList() {
   const container = document.getElementById('notify-list-container');
   if (!container) return;
   const t = window.t || ((k) => k);
+  const setHtml = window.setHtml || ((el, h) => { if (el && el.innerHTML !== h) el.innerHTML = h; });
 
   if (NOTIFICATIONS.length === 0) {
-    container.innerHTML = `
+    setHtml(container, `
       <div class="notify-empty-state">
         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <p>${t('island.notify.empty')}</p>
         <span>${t('island.notify.empty_sub')}</span>
       </div>
-    `;
+    `);
     return;
   }
 
-  container.innerHTML = NOTIFICATIONS.map(n => `
+  const listHtml = NOTIFICATIONS.map(n => `
     <div class="notify-card ${n.unread ? 'unread' : ''}" data-id="${n.id}">
       <div class="notify-card-icon ${n.type || 'system'}">
         ${getNotificationIconSvg(n.type)}
@@ -64,6 +65,7 @@ function renderNotificationList() {
       </button>
     </div>
   `).join('');
+  setHtml(container, listHtml);
 }
 
 function getNotificationIconSvg(type) {

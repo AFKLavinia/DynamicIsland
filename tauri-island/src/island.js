@@ -10,9 +10,10 @@ let currentMode = 'bar';
 let inGame = false;
 let hoverTimeout = null;
 let collapseTimeout = null;
+let collapseAnimationTimer = null;
 
 const SIZES = {
-  'bar': { w: 140, h: 6 },
+  'bar': { w: 160, h: 10 },
   'compact': { w: 440, h: 44 },
   'expanded': { w: 520, h: 220 },
   'game-hidden': { w: 40, h: 2 }
@@ -20,16 +21,22 @@ const SIZES = {
 
 // State diffing yardımcıları (Gereksiz DOM render tetiklenmelerini önler)
 function setText(id, text) {
-  const el = document.getElementById(id);
+  const el = (typeof id === 'string') ? document.getElementById(id) : id;
   if (el && el.textContent !== text) el.textContent = text;
 }
 window.setText = setText;
 
 function setDisplay(id, display) {
-  const el = document.getElementById(id);
+  const el = (typeof id === 'string') ? document.getElementById(id) : id;
   if (el && el.style.display !== display) el.style.display = display;
 }
 window.setDisplay = setDisplay;
+
+function setHtml(idOrEl, html) {
+  const el = (typeof idOrEl === 'string') ? document.getElementById(idOrEl) : idOrEl;
+  if (el && el.innerHTML !== html) el.innerHTML = html;
+}
+window.setHtml = setHtml;
 
 async function setMode(mode) {
   if (currentMode === mode) return;
@@ -44,27 +51,32 @@ async function setMode(mode) {
   const isExpanding = (s.w > oldSize.w) || (s.h > oldSize.h);
 
   if (isExpanding) {
-    // Büyürken: Önce OS penceresini genişlet, 2 rAF ile DirectComposition tamponunun senkronize olmasını bekle (siyah/beyaz flaş yok)
+    if (collapseAnimationTimer) {
+      clearTimeout(collapseAnimationTimer);
+      collapseAnimationTimer = null;
+    }
+    island.classList.remove('collapsing');
+
+    // Büyürken: OS penceresini ve CSS animasyonunu eşzamanlı genişlet
     try {
-      await invoke('set_island_size', { width: s.w, height: s.h });
+      invoke('set_island_size', { width: s.w, height: s.h });
     } catch (e) {}
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (currentMode === mode) {
-          island.className = `island ${mode}`;
-        }
-      });
-    });
-  } else {
-    // Küçülürken: Önce CSS animasyonunu küçült (380ms), ardından pencereyi daralt (176px ani kırpılma yok!)
     island.className = `island ${mode}`;
-    setTimeout(async () => {
+  } else {
+    // Küçülürken: İçerikleri söndür (.collapsing) ve kapsülü daralt (360ms)
+    island.className = `island ${mode} collapsing`;
+
+    if (collapseAnimationTimer) clearTimeout(collapseAnimationTimer);
+    collapseAnimationTimer = setTimeout(() => {
       if (currentMode === mode) {
         try {
-          await invoke('set_island_size', { width: s.w, height: s.h });
+          invoke('set_island_size', { width: s.w, height: s.h });
         } catch (e) {}
       }
-    }, 380);
+      setTimeout(() => {
+        island.classList.remove('collapsing');
+      }, 50);
+    }, 360);
   }
 }
 
@@ -134,18 +146,19 @@ island.addEventListener('mouseenter', () => {
   }
   if (hoverDebounceTimer) {
     clearTimeout(hoverDebounceTimer);
+    hoverDebounceTimer = null;
   }
 
-  // 90ms hover-intent: tarayıcı sekmelerini kapatırken yanlışlıkla tetiklenmeyi önler
+  // 40ms akıcı yanıt: sekmeler kapatılırken kazara açılmayı önler ama imleç gelince beklemeden açar
   hoverDebounceTimer = setTimeout(() => {
     if (inGame) {
-      hoverTimeout = setTimeout(() => setMode('compact'), 2500);
+      hoverTimeout = setTimeout(() => setMode('compact'), 1500);
     } else {
       if (currentMode === 'bar') {
         setMode('compact');
       }
     }
-  }, 90);
+  }, 40);
 });
 
 island.addEventListener('mouseleave', () => {
@@ -153,10 +166,13 @@ island.addEventListener('mouseleave', () => {
     clearTimeout(hoverDebounceTimer);
     hoverDebounceTimer = null;
   }
-  clearTimeout(hoverTimeout);
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout);
+    hoverTimeout = null;
+  }
   if (collapseTimeout) clearTimeout(collapseTimeout);
 
-  const delay = (currentMode === 'expanded') ? 1200 : 800;
+  const delay = (currentMode === 'expanded') ? 1000 : 650;
   collapseTimeout = setTimeout(() => {
     if (inGame) {
       setMode('game-hidden');
@@ -174,6 +190,31 @@ island.addEventListener('click', (e) => {
     setMode('compact');
   } else if (currentMode === 'compact') {
     setMode('expanded');
+  } else if (currentMode === 'expanded') {
+    // İnce Detay: Geniş modda içeriğin boş alanına veya sekmeler satırına tıklandığında zarifçe kompakt moda daralt
+    setMode('compact');
+  }
+});
+
+// İnce Detay: Escape tuşu ile anında daraltma
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (collapseTimeout) clearTimeout(collapseTimeout);
+    if (currentMode === 'expanded') {
+      setMode('compact');
+    } else if (currentMode === 'compact') {
+      setMode('bar');
+    }
+  }
+});
+
+// İnce Detay: Odak pencere dışına kaydığında (başka uygulamaya tıklanınca) güvenli otomatik kapanış
+window.addEventListener('blur', () => {
+  if (currentMode === 'expanded' && !inGame && !isCollapsing) {
+    if (collapseTimeout) clearTimeout(collapseTimeout);
+    collapseTimeout = setTimeout(() => {
+      if (currentMode !== 'bar') setMode('bar');
+    }, 350);
   }
 });
 

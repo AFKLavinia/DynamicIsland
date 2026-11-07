@@ -2,7 +2,7 @@
 
 # 🏝️ AFK Dynamic Island (Cross-Platform)
 
-**Masaüstü platformları (Windows & Linux) için ultra hafif, donanım ivmeli ve modern Apple Dynamic Island deneyimi.**
+**Masaüstü platformları (Windows & Linux) için ultra hafif, donanım ivmeli, modern akıllı durum adası ve bildirim kapsülü.**
 
 [![Rust](https://img.shields.io/badge/Rust-2024_Edition-DEA584?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![Tauri v2](https://img.shields.io/badge/Tauri-v2.0-24C8D8?style=for-the-badge&logo=tauri&logoColor=white)](https://tauri.app/)
@@ -22,22 +22,22 @@
 ### 🎵 1. Medya ve Müzik Çalar Entegrasyonu (Cross-Platform)
 - **Çoklu Platform Medya İletişimi:** 
   - **Windows:** WinRT GSMTC (Global System Media Transport Controls) & WASAPI oturum bazlı uygulama sesi denetimi.
-  - **Linux:** MPRIS D-Bus API ve PipeWire / PulseAudio entegrasyonu.
-  - Spotify, YouTube Music, Apple Music, VLC ve Chromium/Gecko tabanlı tüm modern tarayıcılarla (Chrome, Edge, Firefox, Brave) anında senkronizasyon.
-- **Dinamik Ambient Glow:** Çalan albüm kapağının renk tonunu adanın arka planına dinamik yansıtan lüks ortam aydınlatması.
-- **Akıllı Ham Veri & Duraklatma:** Medya duraklatıldığında şarkı bilgisi ve kapak görseli ekrandan silinmez; yalnızca gerçek ham albüm kapağı verisi alınır (video küçük resimleri ve yapay görseller filtrelenir).
+  - **Linux:** Standart MPRIS D-Bus arayüzü ve modern ses sunucuları (PipeWire / PulseAudio) entegrasyonu.
+  - Yerel müzik uygulamaları, ses akış servisleri, masaüstü medya oynatıcıları ve modern web tarayıcılarıyla tam uyumlu otomatik senkronizasyon.
+- **Dinamik Ambient Glow:** Çalan albüm kapağının renk tonunu adanın arka planına dinamik yansıtan donanım ivmeli ortam aydınlatması.
+- **Akıllı Ham Veri & Duraklatma:** Medya duraklatıldığında parça bilgisi ve kapak görseli ekrandan silinmez; yalnızca gerçek ham albüm kapağı verisi alınır (video küçük resimleri ve yapay görseller otomatik filtrelenir).
 - **Uygulama Başına Donanımsal Ses Denetimi:** Sistem genel ana sesini kısmak yerine, yalnızca çalan uygulamanın ses seviyesini ada üzerinden veya fare tekerleğiyle (scroll) hassas ayarlama imkanı.
 - **GPU Hızlandırmalı Spektrum:** CPU'ya yük bindirmeyen `transform: scaleY` tabanlı 60/120 FPS akıcı ses dalgası görselleştiricisi.
 
 ### 🌤️ 2. Nokta Atışı Meteoroloji İstasyonu
-- **Kapsamlı Konum Altyapısı:** 81 İl, 973 İlçe ve 80.689 Köy/Mahalle içeren modüler veritabanı.
+- **Kapsamlı Konum Altyapısı:** 81 İl, 973 İlçe ve 80.689 Köy/Mahalle içeren modüler yerel veritabanı.
 - **Akıllı Arama & Seçim:** Serbest hatalı metin girişi yerine, yazarak aranan ve yalnızca resmi kayıtlı yerlerin seçilebildiği adres sistemi.
-- **Yüksek Hassasiyetli Geocoding:** Open-Meteo & OpenStreetMap ağları üzerinden milimetrik koordinat kilitlenmesi.
-- **Canlı Telemetri & 3 Günlük Tahmin:** Sıcaklık, hissedilen, nem, rüzgar hızı, UV indeksi ve 3 günlük hava durumu tahminleri.
+- **Yüksek Hassasiyetli Geocoding:** Açık kaynaklı harita ve meteoroloji ağları üzerinden milimetrik koordinat kilitlenmesi.
+- **Canlı Telemetri & 3 Günlük Tahmin:** Sıcaklık, hissedilen sıcaklık, nem oranı, rüzgar hızı, UV indeksi ve 3 günlük hava durumu tahminleri.
 - **Tek Tıkla Otomatik Konum:** Mobil baz istasyonu ve IP kaymalarından bağımsız, istendiğinde tek tıkla otomatik konuma dönüş.
 
 ### 🔔 3. Entegre Bildirim Merkezi
-- **Ada İçi Bildirim Sekmesi:** Genişletilmiş adaya eklenen 3. sekme ile gelen sistem bildirimlerini temiz ve dikkat dağıtmayan bir arayüzle görüntüleme.
+- **Ada İçi Bildirim Sekmesi:** Genişletilmiş adaya entegre 3. sekme ile gelen sistem bildirimlerini temiz ve dikkat dağıtmayan bir arayüzle görüntüleme.
 - **Tek Tıkla Temizleme:** Okunmuş ve bekleyen bildirimleri ada içerisinden anında sıfırlama.
 
 ### 🌐 4. Çoklu Dil Desteği (i18n)
@@ -45,14 +45,14 @@
 - **Anında Değişim:** Sayfa yenilenmesine gerek kalmadan ayarlar menüsünden anında dil değiştirme ve durum kalıcılığı (`localStorage`).
 
 ### 🎮 5. Hibrit Oyun Modu Koruması (Anti-Interference)
-- **Tam Ekran & Borderless Tespiti:** CS2, Valorant, LoL, Cyberpunk gibi oyunların penceresini otomatik algılama.
-- **Fare Tıklama Yutmasını Önleme:** Oyuna girildiğinde ada 40x2 px gizli moda geçer; FPS ve rekabetçi oyunlarda fare yukarı çıktığında oyunu engellemez.
+- **Tam Ekran & Pencereli Tam Ekran Tespiti:** Grafik yoğun tam ekran veya çerçevesiz tam ekran (borderless) pencereleri otomatik algılama.
+- **Fare Tıklama Yutmasını Önleme:** Tam ekran uygulamalara veya oyunlara girildiğinde ada 40x2 px gizli moda geçer; fare ekranın üst kısmına çıktığında tıklamaları engellemez.
 
 ### 🖥️ 6. Modern Masaüstü Denetim Merkezi
-- **Mica & Fluent Tasarım Stili:** Platforma duyarlı, modern, karanlık temalı Denetim Merkezi.
+- **Karanlık ve Saydam Tasarım Stili:** Platforma duyarlı, modern, karanlık temalı Denetim Merkezi.
 - **Dinamik Platform Tespiti:** Çalıştığı işletim sistemini (Windows / Linux / macOS) arka planda otomatik tespit ederek Hakkında bölümünde dinamik gösterim.
-- **Sıfır Titreme (Anti-Flicker & Smooth Transitions):** Boyut değişimlerinde ve hover anlarında CSS animasyonları ile pencere geometrisinin akıcı senkronizasyonu.
-- **Hover-Intent:** Tarayıcı sekmelerini kapatırken adanın yanlışlıkla açılmasını engelleyen 90ms mikro eşik kontrolü.
+- **Sıfır Titreme (Hardware-Masked Transitions):** Sabit geometrili katmanlar ve donanım ivmeli maskeleme sayesinde boyut değişimlerinde sıfır reflow ve akıcı geçişler.
+- **Hover-Intent:** Tarayıcı sekmelerini veya pencere başlıklarını kapatırken adanın yanlışlıkla açılmasını engelleyen 90ms mikro eşik kontrolü.
 
 ---
 
@@ -63,7 +63,7 @@
 | **Bar Modu** | `140 x 6 px` | Boşta dururken ekranın üst merkezinde zarif ince çizgi |
 | **Kompakt Mod** | `440 x 44 px` | Fare üzerine geldiğinde beliren kompakt müzik veya hava durumu şeridi |
 | **Genişletilmiş Mod** | `520 x 220 px` | Tıklandığında açılan tam teşekküllü medya, hava durumu ve bildirim kontrol merkezi |
-| **Oyun Modu** | `40 x 2 px` | Tam ekran bir oyun algılandığında minimum boyuta geçip tıklamaları yutmaz |
+| **Oyun Modu** | `40 x 2 px` | Tam ekran bir uygulama veya oyun algılandığında minimum boyuta geçip tıklamaları yutmaz |
 
 ---
 
@@ -85,7 +85,7 @@ DynamicIsland/
     │   ├── notifications.js         # Ada içi bildirim merkezi motoru
     │   ├── i18n.js                  # Türkçe & İngilizce çoklu dil sözlüğü ve motoru
     │   ├── settings.html            # Masaüstü Denetim Merkezi & Ayarlar
-    │   ├── settings.css             # Fluent Dark Mode stilleri
+    │   ├── settings.css             # Karanlık Mod Denetim Merkezi stilleri
     │   ├── settings-core.js         # IPC köprüsü, platform telemetrisi & navigasyon
     │   ├── settings-weather.js      # Canlı telemetri & hava durumu servisleri
     │   ├── settings-location.js     # 81 İl, İlçe ve Köy akıllı arama/seçici
@@ -138,6 +138,8 @@ cargo build --release
 
 - **Fareyle Üzerine Gelme (Hover):** Bar modundan Kompakt moda geçiş yapar.
 - **Tıklama (Click):** Kompakt moddan Genişletilmiş moda geçer (Müzik, Hava Durumu, Bildirimler).
+- **Genişletilmiş Modda Boşluğa Tıklama:** Geniş moddayken boş bir alana tıklandığında adayı kompakt moda daraltır.
+- **Klavyeden Escape (Esc):** Açık olan adayı anında kompakt veya bar moduna geri kapatır.
 - **Fare Tekerleği (Scroll Wheel):** Ada üzerindeyken çalan uygulamanın ses seviyesini artırır / azaltır.
 - **Sağ Üst Çıkış Butonu:** İsteğe bağlı teyit penceresiyle uygulamayı güvenli kapatır.
 - **Dişli İkonu (Settings):** Denetim Merkezi ayarlar penceresini açar.

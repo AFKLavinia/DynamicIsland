@@ -92,8 +92,16 @@ function handleVolClick(e) {
 function updateVolumeUI() {
   const fill = document.getElementById('vol-slider-fill');
   if (fill) fill.style.width = isMuted ? '0%' : `${currentVolPercent}%`;
+  const lbl = document.getElementById('vol-percent-label');
+  if (lbl) lbl.textContent = isMuted ? '0%' : `${currentVolPercent}%`;
   setDisplay('ico-vol-high', isMuted ? 'none' : 'inline-block');
   setDisplay('ico-vol-mute', isMuted ? 'inline-block' : 'none');
+
+  const muteBtn = document.getElementById('vol-mute-btn');
+  if (muteBtn) {
+    const t = window.t || ((k) => k);
+    muteBtn.title = isMuted ? (t('island.tooltips.unmute') || 'Sesi Aç') : (t('island.tooltips.mute') || 'Sesi Kapat');
+  }
 }
 
 // Fare sürükleme (Drag) ve Tekerlek dinleyicileri
