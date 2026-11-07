@@ -40,9 +40,9 @@ html, body {
 
 /* 1. Bar Modu (İnce zarif üst çizgi) */
 .island.bar {
-  width: 140px;
-  height: 6px;
-  border-radius: 0 0 5px 5px;
+  width: 160px;
+  height: 10px;
+  border-radius: 0 0 6px 6px;
   background: #3a3a3c;
 }
 
