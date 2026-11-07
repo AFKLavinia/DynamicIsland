@@ -829,48 +829,8 @@ html, body {
 }
 
 /* ==========================================================================
-   Bildirimler ve Canlı Header Ticker Stilleri (Windows 11 Fluent)
+   Bildirimler Paneli Stilleri (Windows 11 Fluent)
    ========================================================================== */
-
-/* Header İçi Canlı Bildirim Ticker (Ortadaki Boşluğu Dolduran Modern Çip) */
-.header-notify-ticker {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 3px 10px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  max-width: 210px;
-  overflow: hidden;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-.header-notify-ticker:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(96, 205, 255, 0.3);
-  transform: translateY(-1px);
-}
-.ticker-pulse-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #30d158;
-  box-shadow: 0 0 6px #30d158;
-  flex-shrink: 0;
-}
-.ticker-msg-text {
-  font-size: 11px;
-  color: #aeaeb2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 500;
-}
-.header-notify-ticker:hover .ticker-msg-text {
-  color: #ffffff;
-}
 
 /* Tab unread badge */
 .notify-unread-badge {
@@ -882,45 +842,6 @@ html, body {
   border-radius: 8px;
   margin-left: 3px;
   line-height: 1.2;
-}
-
-/* Müzik paneli içi kompakt bildirim çipi */
-.music-inline-notify {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  cursor: pointer;
-  max-width: 170px;
-  overflow: hidden;
-  transition: all 0.18s ease;
-  user-select: none;
-}
-.music-inline-notify:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(96, 205, 255, 0.25);
-}
-.music-inline-notify svg {
-  width: 11px;
-  height: 11px;
-  stroke: #60cdff;
-  fill: none;
-  stroke-width: 2;
-  flex-shrink: 0;
-}
-.music-inline-notify span {
-  font-size: 10px;
-  color: #aeaeb2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 500;
-}
-.music-inline-notify:hover span {
-  color: #ffffff;
 }
 
 /* Bildirimler Sekme Paneli */

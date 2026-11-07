@@ -62,6 +62,7 @@ pub fn run_app() {
             custom_city: Mutex::new(String::new()),
         })
         .invoke_handler(tauri::generate_handler![
+            crate::window::get_platform_info,
             crate::window::open_settings_window,
             crate::window::set_island_size,
             crate::window::check_game_mode,

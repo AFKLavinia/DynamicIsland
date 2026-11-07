@@ -50,6 +50,38 @@ function changeAppLanguage(lang) {
     }
 }
 
+// Platform Bilgisini Dinamik Olarak Tespit Etme (Windows / Linux)
+async function loadPlatformInfo() {
+    const el = document.getElementById('about-platform-val');
+    if (!el) return;
+
+    try {
+        if (window.invoke) {
+            const platform = await window.invoke('get_platform_info');
+            if (platform) {
+                el.textContent = platform;
+                return;
+            }
+        }
+    } catch (e) {}
+
+    // Fallback detection via navigator
+    const ua = (navigator.userAgent || '').toLowerCase();
+    if (ua.includes('win')) {
+        el.textContent = 'Windows';
+    } else if (ua.includes('linux')) {
+        el.textContent = 'Linux';
+    } else if (ua.includes('mac')) {
+        el.textContent = 'macOS';
+    } else {
+        el.textContent = 'Platform';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadPlatformInfo();
+});
+
 // Global olarak erişilebilir kıl (HTML inline event handler'ları için)
 window.invoke = invoke;
 window.event = event;

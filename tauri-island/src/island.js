@@ -167,7 +167,7 @@ island.addEventListener('mouseleave', () => {
 });
 
 island.addEventListener('click', (e) => {
-  if (e.target.closest('button') || e.target.closest('.vol-slider-track') || e.target.closest('.track-progress-bar') || e.target.closest('.exit-dialog') || e.target.closest('.header-notify-ticker') || e.target.closest('.notify-card')) return;
+  if (e.target.closest('button') || e.target.closest('.vol-slider-track') || e.target.closest('.track-progress-bar') || e.target.closest('.exit-dialog') || e.target.closest('.notify-card')) return;
   if (collapseTimeout) clearTimeout(collapseTimeout);
 
   if (currentMode === 'bar') {

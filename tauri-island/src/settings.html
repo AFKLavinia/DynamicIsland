@@ -15,7 +15,7 @@
       <div class="afk-logo">AFK</div>
       <div class="brand-text">
         <h1 data-i18n="settings.header.title">Dynamic Island Ayarları</h1>
-        <p data-i18n="settings.header.subtitle">Windows 11 Denetim Merkezi</p>
+        <p data-i18n="settings.header.subtitle">Denetim Merkezi</p>
       </div>
     </div>
     
@@ -120,9 +120,9 @@
               </div>
             </div>
 
-            <button class="btn-win-secondary" onclick="useAutoLocation()" title="Windows GPS ve IP telemetrisine dön" data-i18n-title="settings.weather.gps_tooltip">
+            <button class="btn-win-secondary" onclick="useAutoLocation()" title="Otomatik konum telemetrisine dön" data-i18n-title="settings.weather.gps_tooltip">
               <svg style="width: 13px; height: 13px; stroke: #70d87c; fill: none; stroke-width: 2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"></polygon></svg>
-              <span data-i18n="settings.weather.gps_btn">Otomatik Konum (GPS)</span>
+              <span data-i18n="settings.weather.gps_btn">Otomatik Konum</span>
             </button>
           </div>
 
@@ -333,7 +333,7 @@
               <div class="afk-logo" style="font-size: 15px; padding: 6px 14px;">AFK</div>
               <div>
                 <strong style="font-size: 15px; color: #ffffff;">AFK Dynamic Island</strong>
-                <p style="font-size: 12px; color: var(--win-text-secondary);" data-i18n="settings.about.app_tagline">Windows 11 İçin Modern Apple Dynamic Island Deneyimi</p>
+                <p style="font-size: 12px; color: var(--win-text-secondary);" data-i18n="settings.about.app_tagline">Masaüstü İçin Modern Apple Dynamic Island Deneyimi</p>
               </div>
             </div>
             <span class="lp-tag">v0.2.1</span>
@@ -345,12 +345,16 @@
               <strong>Rust + Tauri v2</strong>
             </div>
             <div class="info-row">
+              <span data-i18n="settings.about.platform">Platform</span>
+              <strong id="about-platform-val">Tespit ediliyor...</strong>
+            </div>
+            <div class="info-row">
               <span data-i18n="settings.about.loc_db">Konum Veritabanı</span>
               <strong data-i18n="settings.about.loc_db_desc">Modüler 81 İl, 973 İlçe, 80.689 Köy</strong>
             </div>
             <div class="info-row">
-              <span data-i18n="settings.about.ui_style">Arayüz Dili</span>
-              <strong data-i18n="settings.about.ui_style_desc">Windows 11 Fluent Design (Dark Mica)</strong>
+              <span data-i18n="settings.about.ui_style">Tasarım Stili</span>
+              <strong data-i18n="settings.about.ui_style_desc">Fluent Dark (Mica)</strong>
             </div>
             <div class="info-row">
               <span data-i18n="settings.about.developer">Geliştirici</span>

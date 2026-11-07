@@ -51,7 +51,7 @@
 
       // Ayarlar Üst Bar ve Gezinme
       'settings.header.title': 'Dynamic Island Ayarları',
-      'settings.header.subtitle': 'Windows 11 Denetim Merkezi',
+      'settings.header.subtitle': 'Denetim Merkezi',
       'settings.header.core_active': 'AFK Çekirdek Aktif',
       'settings.nav.weather': 'Hava Durumu',
       'settings.nav.media': 'Medya & Ses',
@@ -72,8 +72,8 @@
       'settings.weather.wind_label': 'Rüzgar:',
       'settings.weather.station_card_title': 'Konum ve Meteoroloji İstasyonu',
       'settings.weather.station_card_sub': 'Yazarak arayın ve yalnızca açılır listedeki resmi kayıtlı yerleri seçin (81 İl, 973 İlçe, 80.689 Köy).',
-      'settings.weather.gps_btn': 'Otomatik Konum (GPS)',
-      'settings.weather.gps_tooltip': 'Windows GPS ve IP telemetrisine dön',
+      'settings.weather.gps_btn': 'Otomatik Konum',
+      'settings.weather.gps_tooltip': 'Otomatik konum telemetrisine dön',
       'settings.weather.step1_title': 'İl (Şehir)',
       'settings.weather.step1_meta': '81 İl',
       'settings.weather.step1_placeholder': 'İl ara veya seç (Örn: Osmaniye, Adana)...',
@@ -138,12 +138,13 @@
       // Ayarlar - Hakkında
       'settings.about.header_title': 'Hakkında',
       'settings.about.header_sub': 'Yazılım sürümü, çekirdek motoru ve lisans bilgileri.',
-      'settings.about.app_tagline': 'Windows 11 İçin Modern Apple Dynamic Island Deneyimi',
+      'settings.about.app_tagline': 'Masaüstü İçin Modern Apple Dynamic Island Deneyimi',
       'settings.about.core_engine': 'Çekirdek Motor',
+      'settings.about.platform': 'Platform',
       'settings.about.loc_db': 'Konum Veritabanı',
       'settings.about.loc_db_desc': 'Modüler 81 İl, 973 İlçe, 80.689 Köy',
-      'settings.about.ui_style': 'Arayüz Dili',
-      'settings.about.ui_style_desc': 'Windows 11 Fluent Design (Dark Mica)',
+      'settings.about.ui_style': 'Tasarım Stili',
+      'settings.about.ui_style_desc': 'Fluent Dark (Mica)',
       'settings.about.developer': 'Geliştirici'
     },
 
@@ -190,7 +191,7 @@
 
       // Settings Topbar & Navigation
       'settings.header.title': 'Dynamic Island Settings',
-      'settings.header.subtitle': 'Windows 11 Control Center',
+      'settings.header.subtitle': 'Control Center',
       'settings.header.core_active': 'AFK Core Active',
       'settings.nav.weather': 'Weather',
       'settings.nav.media': 'Media & Audio',
@@ -211,8 +212,8 @@
       'settings.weather.wind_label': 'Wind:',
       'settings.weather.station_card_title': 'Location & Meteorology Station',
       'settings.weather.station_card_sub': 'Search and select registered locations (81 Provinces, 973 Districts, 80,689 Villages).',
-      'settings.weather.gps_btn': 'Auto Location (GPS)',
-      'settings.weather.gps_tooltip': 'Return to Windows GPS and IP telemetry',
+      'settings.weather.gps_btn': 'Auto Location',
+      'settings.weather.gps_tooltip': 'Return to automatic location telemetry',
       'settings.weather.step1_title': 'Province (City)',
       'settings.weather.step1_meta': '81 Provinces',
       'settings.weather.step1_placeholder': 'Search province (e.g. Istanbul, Ankara)...',
@@ -277,12 +278,13 @@
       // Settings - About
       'settings.about.header_title': 'About',
       'settings.about.header_sub': 'Software version, core engine and license details.',
-      'settings.about.app_tagline': 'Modern Apple Dynamic Island Experience for Windows 11',
+      'settings.about.app_tagline': 'Modern Apple Dynamic Island Experience for Desktop',
       'settings.about.core_engine': 'Core Engine',
+      'settings.about.platform': 'Platform',
       'settings.about.loc_db': 'Location Database',
       'settings.about.loc_db_desc': 'Modular 81 Provinces, 973 Districts, 80,689 Villages',
-      'settings.about.ui_style': 'UI Style',
-      'settings.about.ui_style_desc': 'Windows 11 Fluent Design (Dark Mica)',
+      'settings.about.ui_style': 'Design Style',
+      'settings.about.ui_style_desc': 'Fluent Dark (Mica)',
       'settings.about.developer': 'Developer'
     }
   };

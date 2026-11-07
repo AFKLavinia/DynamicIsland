@@ -2,6 +2,26 @@ use crate::models::GameData;
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
 #[tauri::command]
+pub fn get_platform_info() -> String {
+    #[cfg(target_os = "windows")]
+    {
+        "Windows".to_string()
+    }
+    #[cfg(target_os = "linux")]
+    {
+        "Linux".to_string()
+    }
+    #[cfg(target_os = "macos")]
+    {
+        "macOS".to_string()
+    }
+    #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
+    {
+        "Desktop".to_string()
+    }
+}
+
+#[tauri::command]
 pub async fn open_settings_window(app_handle: tauri::AppHandle) -> Result<(), String> {
     let settings_win = if let Some(win) = app_handle.get_webview_window("settings") {
         let _ = win.show();
