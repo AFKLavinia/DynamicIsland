@@ -17,17 +17,18 @@ pub fn run_app() {
             }
 
             if let Some(window) = app.get_webview_window("main") {
-                if let Ok(Some(monitor)) = window.current_monitor() {
+                let maybe_monitor = window.current_monitor().ok().flatten().or_else(|| window.primary_monitor().ok().flatten());
+                if let Some(monitor) = maybe_monitor {
                     let scale = monitor.scale_factor();
-                    let mon_w = monitor.size().width as f64 / scale;
-                    let mon_pos_x = monitor.position().x as f64 / scale;
-                    let mon_pos_y = monitor.position().y as f64 / scale;
-                    let bar_w = 140.0;
-                    let bar_h = 6.0;
-                    let x = mon_pos_x + (mon_w - bar_w) / 2.0;
-                    let y = mon_pos_y;
-                    let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize { width: bar_w, height: bar_h }));
-                    let _ = window.set_position(tauri::Position::Logical(tauri::LogicalPosition { x, y }));
+                    let mon_phys_w = monitor.size().width as f64;
+                    let mon_phys_x = monitor.position().x as f64;
+                    let mon_phys_y = monitor.position().y as f64;
+                    let bar_phys_w = (140.0 * scale).round();
+                    let bar_phys_h = (6.0 * scale).round();
+                    let x = (mon_phys_x + (mon_phys_w - bar_phys_w) / 2.0).round();
+                    let y = mon_phys_y;
+                    let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize { width: bar_phys_w as u32, height: bar_phys_h as u32 }));
+                    let _ = window.set_position(tauri::Position::Physical(tauri::PhysicalPosition { x: x as i32, y: y as i32 }));
                 }
             }
 
@@ -63,6 +64,8 @@ pub fn run_app() {
         .invoke_handler(tauri::generate_handler![
             crate::window::open_settings_window,
             crate::window::set_island_size,
+            crate::window::check_game_mode,
+            crate::window::exit_app,
             crate::weather::get_weather,
             crate::weather::set_city,
             crate::media::check_music,
@@ -71,8 +74,7 @@ pub fn run_app() {
             crate::audio::change_volume,
             crate::media::media_play_pause,
             crate::media::media_next,
-            crate::media::media_prev,
-            crate::window::check_game_mode
+            crate::media::media_prev
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

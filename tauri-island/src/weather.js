@@ -58,18 +58,22 @@ function updateCompactWeatherSummary() {
   const iconEl = document.getElementById('cws-icon');
   const rangeEl = document.getElementById('cws-range');
   const telemEl = document.getElementById('cws-telemetry');
+  const t = window.t || ((k) => k);
+  const i18n = window.i18n;
+
   if (!cachedWeather || !cachedWeather.success) {
     if (iconEl) iconEl.innerHTML = weatherSvg('1', false, 18);
-    setText('cws-location', 'Hava Durumu');
-    setText('cws-desc', 'Alınıyor...');
+    setText('cws-location', t('island.weather.default_loc'));
+    setText('cws-desc', t('island.weather.loading'));
     setText('cws-temp', '');
     if (rangeEl) rangeEl.style.display = 'none';
     if (telemEl) telemEl.style.display = 'none';
     return;
   }
   if (iconEl) iconEl.innerHTML = weatherSvg(cachedWeather.code, cachedWeather.night, 18);
-  setText('cws-location', cachedWeather.location || 'Konum');
-  setText('cws-desc', cachedWeather.desc || 'Açık');
+  setText('cws-location', cachedWeather.location || t('island.weather.default_loc'));
+  const desc = i18n ? i18n.getWeatherDesc(cachedWeather.code, cachedWeather.desc) : (cachedWeather.desc || t('island.weather.default_desc'));
+  setText('cws-desc', desc);
   setText('cws-temp', cachedWeather.temp_c ? `${cachedWeather.temp_c}°C` : '');
 
   // Günün Derece Aralığı
@@ -78,7 +82,8 @@ function updateCompactWeatherSummary() {
       rangeEl.innerHTML = `<span class="arrow-up">↑</span> ${cachedWeather.today_max_c}°<span class="range-sep">·</span><span class="arrow-down">↓</span> ${cachedWeather.today_min_c}°`;
       rangeEl.style.display = 'inline-flex';
     } else if (cachedWeather.feels_c) {
-      rangeEl.innerHTML = `<span>Hiss. ${cachedWeather.feels_c}°</span>`;
+      const feelsText = t('island.weather.feels_short', { temp: cachedWeather.feels_c });
+      rangeEl.innerHTML = `<span>${feelsText}</span>`;
       rangeEl.style.display = 'inline-flex';
     } else {
       rangeEl.style.display = 'none';
@@ -88,10 +93,12 @@ function updateCompactWeatherSummary() {
   // Canlı İkincil Telemetri (Option A)
   if (telemEl) {
     if (cachedWeather.humidity) {
+      rangeEl.style.display = 'inline-flex';
       telemEl.innerHTML = `<span>💧 %${cachedWeather.humidity}</span>`;
       telemEl.style.display = 'inline-flex';
     } else if (cachedWeather.wind_kmh) {
-      telemEl.innerHTML = `<span>💨 ${cachedWeather.wind_kmh}km/s</span>`;
+      const windShort = t('island.weather.wind_short', { speed: cachedWeather.wind_kmh });
+      telemEl.innerHTML = `<span>💨 ${windShort}</span>`;
       telemEl.style.display = 'inline-flex';
     } else {
       telemEl.style.display = 'none';
@@ -116,6 +123,9 @@ function renderWeather(w) {
   if (!w || !w.success) return;
   cachedWeather = w;
   window.cachedWeather = w;
+  const t = window.t || ((k) => k);
+  const i18n = window.i18n;
+
   setText('compact-temp', w.temp_c ? `${w.temp_c}°C` : '');
   const cwi = document.getElementById('compact-weather-icon');
   if (cwi) cwi.innerHTML = weatherSvg(w.code, w.night, 14);
@@ -123,22 +133,21 @@ function renderWeather(w) {
   // Kompakt ön izleme özetini daima hazır tut
   updateCompactWeatherSummary();
 
+  const weatherDesc = i18n ? i18n.getWeatherDesc(w.code, w.desc) : (w.desc || '');
   setText('weather-location', w.location || '');
   setText('weather-temp', w.temp_c ? `${w.temp_c}°C` : '');
-  setText('weather-desc', w.desc || '');
+  setText('weather-desc', weatherDesc);
   document.getElementById('weather-icon-container').innerHTML = weatherSvg(w.code, w.night, 52);
 
-  setText('tel-1', w.feels_c ? `Hissedilen ${w.feels_c}°C · Nem %${w.humidity || 0}` : '');
-  setText('tel-2', w.wind_kmh ? `Rüzgar ${w.wind_kmh} km/sa ${w.wind_dir || ''}` : '');
-  setText('tel-3', w.pressure_mb ? `Basınç ${w.pressure_mb} hPa · UV ${w.uv || 0}` : '');
+  const windDir = i18n ? i18n.formatWindDir(w.wind_dir) : (w.wind_dir || '');
+  setText('tel-1', w.feels_c ? `${t('island.weather.feels_like', { temp: w.feels_c })} · ${t('island.weather.humidity', { hum: w.humidity || 0 })}` : '');
+  setText('tel-2', w.wind_kmh ? t('island.weather.wind', { speed: w.wind_kmh, dir: windDir }) : '');
+  setText('tel-3', w.pressure_mb ? `${t('island.weather.pressure', { press: w.pressure_mb })} · ${t('island.weather.uv', { uv: w.uv || 0 })}` : '');
 
   document.getElementById('weather-forecast').innerHTML = (w.forecast || []).map(d => {
-    let day = '';
-    try {
-      const dt = new Date(d.date + 'T12:00:00');
-      day = isNaN(dt.getTime()) ? d.date : dt.toLocaleDateString('tr-TR', { weekday: 'short' });
-    } catch (e) { day = d.date; }
-    const safeDesc = (d.desc || '').replace(/"/g, '&quot;');
+    const day = i18n ? i18n.formatDayName(d.date) : d.date;
+    const dayDesc = i18n ? i18n.getWeatherDesc(d.code, d.desc) : (d.desc || '');
+    const safeDesc = dayDesc.replace(/"/g, '&quot;');
     return `<div class="fc-day" title="${safeDesc}">
       <span>${day}</span>
       ${weatherSvg(d.code, false, 22)}
@@ -155,6 +164,17 @@ async function refreshWeather() {
       renderWeather(w);
     }
   } catch (e) {}
+}
+
+// Dil değiştiğinde hava durumu arayüzünü anında güncelle
+if (window.i18n && window.i18n.onLanguageChange) {
+  window.i18n.onLanguageChange(() => {
+    if (cachedWeather) {
+      renderWeather(cachedWeather);
+    } else {
+      updateCompactWeatherSummary();
+    }
+  });
 }
 
 window.updateCompactWeatherSummary = updateCompactWeatherSummary;

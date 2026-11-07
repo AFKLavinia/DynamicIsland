@@ -1,5 +1,5 @@
 use crate::models::MusicData;
-use crate::utils::{base64_encode, percent_encode, sanitize_music_query, sniff_mime};
+use crate::utils::{base64_encode, sniff_mime};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
@@ -38,84 +38,6 @@ static COVER_CACHE: Mutex<CoverCache> = Mutex::new(CoverCache {
     from_system: false,
     at: None,
 });
-
-fn scan_local_folder_for_cover(title: &str, artist: &str) -> Option<Vec<u8>> {
-    let title_clean = title.trim();
-    let artist_clean = artist.trim();
-    if title_clean.len() < 3 && artist_clean.len() < 3 {
-        return None;
-    }
-
-    let mut dirs_to_check = Vec::new();
-    #[cfg(target_os = "windows")]
-    {
-        if let Ok(userprofile) = std::env::var("USERPROFILE") {
-            let p = std::path::PathBuf::from(userprofile);
-            dirs_to_check.push(p.join("Music"));
-            dirs_to_check.push(p.join("Downloads"));
-        }
-    }
-    #[cfg(target_os = "linux")]
-    {
-        if let Ok(home) = std::env::var("HOME") {
-            let p = std::path::PathBuf::from(home);
-            dirs_to_check.push(p.join("Music"));
-            dirs_to_check.push(p.join("Downloads"));
-        }
-    }
-
-    let title_lower = title_clean.to_lowercase();
-    let artist_lower = artist_clean.to_lowercase();
-
-    for dir in dirs_to_check {
-        if !dir.is_dir() { continue; }
-        if let Ok(entries) = std::fs::read_dir(&dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                let name = path.file_stem().and_then(|s| s.to_str()).unwrap_or("").to_lowercase();
-
-                if path.is_dir() {
-                    let matched = (!artist_lower.is_empty() && name.contains(&artist_lower))
-                        || (!title_lower.is_empty() && name.contains(&title_lower));
-                    if matched {
-                        if let Some(bytes) = find_cover_in_dir(&path) {
-                            return Some(bytes);
-                        }
-                    }
-                } else if !title_lower.is_empty() && name.contains(&title_lower) {
-                    if let Some(parent) = path.parent() {
-                        if let Some(bytes) = find_cover_in_dir(parent) {
-                            return Some(bytes);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    None
-}
-
-fn find_cover_in_dir(dir: &std::path::Path) -> Option<Vec<u8>> {
-    let cover_names = [
-        "cover.jpg", "cover.png", "cover.jpeg", "cover.webp",
-        "folder.jpg", "folder.png", "folder.jpeg",
-        "albumart.jpg", "albumart.png",
-        "front.jpg", "front.png", "front.jpeg",
-    ];
-    for name in cover_names {
-        let p = dir.join(name);
-        if p.is_file() {
-            if let Ok(metadata) = p.metadata() {
-                if metadata.len() > 0 && metadata.len() < 4_000_000 {
-                    if let Ok(bytes) = std::fs::read(p) {
-                        return Some(bytes);
-                    }
-                }
-            }
-        }
-    }
-    None
-}
 
 #[cfg(target_os = "windows")]
 mod sysmedia {
@@ -211,9 +133,33 @@ mod sysmedia {
             .GetTimelineProperties()
             .ok()
             .and_then(|t| {
-                let pos = t.Position().ok().map(|d| (d.Duration / 10_000_000).max(0) as u32).unwrap_or(0);
-                let dur = t.EndTime().ok().map(|d| (d.Duration / 10_000_000).max(0) as u32).unwrap_or(0);
-                Some((pos, dur))
+                let base_pos = t.Position().ok().map(|d| d.Duration).unwrap_or(0);
+                let start_time = t.StartTime().ok().map(|d| d.Duration).unwrap_or(0);
+                let end_time = t.EndTime().ok().map(|d| d.Duration).unwrap_or(0);
+                let dur_100ns = end_time.saturating_sub(start_time);
+                let dur_secs = (dur_100ns / 10_000_000).max(0) as u32;
+
+                let mut pos_100ns = base_pos.saturating_sub(start_time);
+                if playing {
+                    if let Ok(last_updated) = t.LastUpdatedTime() {
+                        if let Ok(now) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
+                            let unix_100ns = (now.as_secs() as i64) * 10_000_000 + (now.subsec_nanos() as i64) / 100;
+                            let windows_100ns = unix_100ns + 116_444_736_000_000_000i64;
+                            let lut = last_updated.UniversalTime;
+                            if lut > 0 && windows_100ns >= lut {
+                                let elapsed = windows_100ns - lut;
+                                if elapsed < 86_400 * 10_000_000 {
+                                    pos_100ns = pos_100ns.saturating_add(elapsed);
+                                }
+                            }
+                        }
+                    }
+                }
+                if dur_100ns > 0 {
+                    pos_100ns = pos_100ns.min(dur_100ns);
+                }
+                let pos_secs = (pos_100ns / 10_000_000).max(0) as u32;
+                Some((pos_secs, dur_secs))
             })
             .unwrap_or((0, 0));
 
@@ -455,9 +401,11 @@ pub fn check_spotify_cached() -> bool {
 #[tauri::command]
 pub async fn check_music() -> Result<MusicData, String> {
     let skip_key = {
-        let c = COVER_CACHE.lock().map_err(|e| e.to_string())?;
-        let recent = c.at.map(|t| t.elapsed() < Duration::from_secs(12)).unwrap_or(false);
-        if (c.from_system && !c.cover.is_empty()) || recent {
+        let c = match COVER_CACHE.lock() {
+            Ok(guard) => guard,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+        if !c.cover.is_empty() {
             c.key.clone()
         } else {
             String::new()
@@ -478,51 +426,38 @@ pub async fn check_music() -> Result<MusicData, String> {
     };
 
     let key = media_key(&raw.app, &raw.artist, &raw.title);
-    let cover = match raw.art {
-        Art::Skip => COVER_CACHE.lock().map(|c| c.cover.clone()).unwrap_or_default(),
-        art => {
-            let (cover, from_system) = match art {
-                Art::Bytes(bytes) => (
-                    format!("data:{};base64,{}", sniff_mime(&bytes), base64_encode(&bytes)),
-                    true,
-                ),
-                Art::Url(u) => (u, true),
-                _ => {
-                    let title_clone = raw.title.clone();
-                    let artist_clone = raw.artist.clone();
-                    let local_bytes = tokio::task::spawn_blocking(move || {
-                        scan_local_folder_for_cover(&title_clone, &artist_clone)
-                    })
-                    .await
-                    .ok()
-                    .flatten();
-
-                    if let Some(bytes) = local_bytes {
-                        (
-                            format!("data:{};base64,{}", sniff_mime(&bytes), base64_encode(&bytes)),
-                            true,
-                        )
-                    } else {
-                        let query = if !raw.artist.is_empty() && !raw.title.is_empty() {
-                            format!("{} {}", raw.artist, raw.title)
-                        } else {
-                            raw.title.clone()
-                        };
-                        let mut cover = fetch_album_art(&query).await;
-                        if cover.is_empty() && !raw.artist.is_empty() {
-                            cover = fetch_album_art(&raw.title).await;
-                        }
-                        (cover, false)
-                    }
-                }
-            };
+    let (cover, cover_changed) = match raw.art {
+        Art::Skip => (String::new(), false),
+        Art::Bytes(bytes) => {
+            // SADECE SİSTEMDEN GELEN HAM VERİ (Raw Thumbnail Bytes)
+            let data_url = format!("data:{};base64,{}", sniff_mime(&bytes), base64_encode(&bytes));
             if let Ok(mut c) = COVER_CACHE.lock() {
                 c.key = key;
-                c.cover = cover.clone();
-                c.from_system = from_system;
+                c.cover = data_url.clone();
+                c.from_system = true;
                 c.at = Some(Instant::now());
             }
-            cover
+            (data_url, true)
+        }
+        Art::Url(u) => {
+            // SADECE SİSTEMDEN GELEN HAM URL
+            if let Ok(mut c) = COVER_CACHE.lock() {
+                c.key = key;
+                c.cover = u.clone();
+                c.from_system = true;
+                c.at = Some(Instant::now());
+            }
+            (u, true)
+        }
+        _ => {
+            // Sistem ham veri vermediyse boş bırak (Asla harici arama veya uydurma kapak yok!)
+            if let Ok(mut c) = COVER_CACHE.lock() {
+                c.key = key;
+                c.cover = String::new();
+                c.from_system = false;
+                c.at = Some(Instant::now());
+            }
+            (String::new(), true)
         }
     };
 
@@ -533,6 +468,7 @@ pub async fn check_music() -> Result<MusicData, String> {
         artist: raw.artist,
         app: raw.app,
         cover_url: cover,
+        cover_changed,
         spotify_available: true,
         position_secs: raw.position_secs,
         duration_secs: raw.duration_secs,
@@ -652,60 +588,4 @@ pub async fn media_next() {
 #[tauri::command]
 pub async fn media_prev() {
     control_media(2).await;
-}
-
-async fn fetch_album_art(query: &str) -> String {
-    let clean = sanitize_music_query(query);
-    if clean.is_empty() {
-        return String::new();
-    }
-
-    let client = match reqwest::Client::builder().timeout(Duration::from_millis(3000)).build() {
-        Ok(c) => c,
-        Err(_) => return String::new(),
-    };
-
-    // 1. Öncelik: Deezer API
-    let deezer_url = format!("https://api.deezer.com/search?q={}&limit=1", percent_encode(&clean));
-    if let Ok(resp) = client.get(&deezer_url).send().await {
-        if let Ok(json) = resp.json::<serde_json::Value>().await {
-            if let Some(cover) = json
-                .get("data")
-                .and_then(|d| d.get(0))
-                .and_then(|f| f.get("album"))
-                .and_then(|a| {
-                    a.get("cover_big")
-                        .or_else(|| a.get("cover_medium"))
-                        .or_else(|| a.get("cover"))
-                })
-                .and_then(|c| c.as_str())
-            {
-                if !cover.is_empty() {
-                    return cover.to_string();
-                }
-            }
-        }
-    }
-
-    // 2. Yedek: iTunes API
-    let itunes_url = format!(
-        "https://itunes.apple.com/search?term={}&entity=song&limit=1",
-        percent_encode(&clean)
-    );
-    if let Ok(resp) = client.get(&itunes_url).send().await {
-        if let Ok(json) = resp.json::<serde_json::Value>().await {
-            if let Some(art) = json
-                .get("results")
-                .and_then(|r| r.get(0))
-                .and_then(|f| f.get("artworkUrl100"))
-                .and_then(|a| a.as_str())
-            {
-                if !art.is_empty() {
-                    return art.replace("100x100bb", "300x300bb");
-                }
-            }
-        }
-    }
-
-    String::new()
 }

@@ -43,6 +43,7 @@ pub struct MusicData {
     pub artist: String,
     pub app: String,
     pub cover_url: String,
+    pub cover_changed: bool,
     pub spotify_available: bool,
     pub position_secs: u32,
     pub duration_secs: u32,

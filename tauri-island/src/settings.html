@@ -2,160 +2,378 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Dynamic Island Ayarları</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-    }
-
-    body {
-      background: #141416;
-      color: #ffffff;
-      padding: 24px;
-      overflow: hidden;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 20px;
-    }
-    .header h2 {
-      font-size: 16px;
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .section {
-      margin-bottom: 22px;
-    }
-    .section-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: #8e8e93;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .input-group {
-      display: flex;
-      gap: 10px;
-    }
-    input[type="text"] {
-      flex: 1;
-      background: #242426;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input[type="text"]:focus {
-      border-color: #0a84ff;
-    }
-
-    .btn {
-      background: #0a84ff;
-      color: #ffffff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn:hover {
-      background: #0071e3;
-    }
-
-    .info-card {
-      background: #1c1c1e;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 12px;
-      color: #a1a1a6;
-      line-height: 1.5;
-    }
-
-    .status-text {
-      font-size: 12px;
-      color: #30d158;
-      margin-top: 6px;
-      display: none;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="settings.header.title">AFK Dynamic Island Ayarları</title>
+  <!-- Windows 11 Fluent Mica Theme -->
+  <link rel="stylesheet" href="settings.css">
 </head>
 <body>
 
-  <div class="header">
-    <svg style="width:20px; height:20px; stroke:#0a84ff; fill:none; stroke-width:2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-    <h2>Dynamic Island Ayarları</h2>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Konum & Hava Durumu</div>
-    <div class="input-group">
-      <input type="text" id="city-input" placeholder="Şehir veya ilçe adı (boş bırakırsan konum otomatik bulunur)">
-      <button class="btn" onclick="saveCity()">Kaydet</button>
+  <!-- Top Bar with AFK Brand Badge & Language Switcher -->
+  <div class="topbar">
+    <div class="brand-box">
+      <div class="afk-logo">AFK</div>
+      <div class="brand-text">
+        <h1 data-i18n="settings.header.title">Dynamic Island Ayarları</h1>
+        <p data-i18n="settings.header.subtitle">Windows 11 Denetim Merkezi</p>
+      </div>
     </div>
-    <div id="auto-note" class="status-text" style="display:block; color:#8e8e93;"></div>
-    <div id="status-msg" class="status-text">Konum kaydedildi.</div>
-  </div>
+    
+    <div class="topbar-right-controls">
+      <!-- Windows 11 Hızlı Dil Değiştirici -->
+      <div class="win-segmented-control compact" id="lang-segmented-topbar" title="Dil / Language">
+        <button class="seg-btn" data-lang="tr" onclick="changeAppLanguage('tr')">
+          <span class="seg-flag">🇹🇷</span>
+          <span>TR</span>
+        </button>
+        <button class="seg-btn" data-lang="en" onclick="changeAppLanguage('en')">
+          <span class="seg-flag">🇬🇧</span>
+          <span>EN</span>
+        </button>
+      </div>
 
-  <div class="section">
-    <div class="section-title">Oyun Modu & Çekirdek Koruması</div>
-    <div class="info-card">
-      Windows Direct3D ve Shell bildirimleri otonom olarak dinlenmektedir. Tam ekran bir oyuna girildiğinde Dynamic Island otomatik olarak gizlenir.
+      <div class="window-badge">
+        <span class="pulse-dot"></span>
+        <span data-i18n="settings.header.core_active">AFK Çekirdek Aktif</span>
+      </div>
     </div>
   </div>
 
+  <!-- Main Layout -->
+  <div class="main-layout">
+    <!-- Windows 11 Sidebar Navigation -->
+    <div class="sidebar">
+      <button class="nav-btn active" onclick="switchNav('weather', this)">
+        <svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+        <span data-i18n="settings.nav.weather">Hava Durumu</span>
+      </button>
+      <button class="nav-btn" onclick="switchNav('media', this)">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        <span data-i18n="settings.nav.media">Medya & Ses</span>
+      </button>
+      <button class="nav-btn" onclick="switchNav('island', this)">
+        <svg viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg>
+        <span data-i18n="settings.nav.island">Ada Görünümü</span>
+      </button>
+      <button class="nav-btn" onclick="switchNav('about', this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span data-i18n="settings.nav.about">Hakkında</span>
+      </button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content-area">
+
+      <!-- ================= 1. HAVA DURUMU SEKMESİ ================= -->
+      <div id="panel-weather" class="tab-panel active">
+        
+        <div class="win11-page-header">
+          <h2 data-i18n="settings.weather.header_title">Hava Durumu</h2>
+          <p data-i18n="settings.weather.header_sub">Meteoroloji istasyonu telemetrisi ve Türkiye altyapı adres yapılandırması.</p>
+        </div>
+
+        <!-- Canlı Telemetri Kartı (Hero Card) -->
+        <div class="live-preview-card">
+          <div class="live-preview-header">
+            <div class="lp-location-box">
+              <svg style="width:16px; height:16px; stroke:var(--win-accent); fill:none; stroke-width:2;" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <span id="lp-location" class="lp-location-name" data-i18n="settings.weather.loading">Yükleniyor...</span>
+              <span id="lp-mode-tag" class="lp-tag" data-i18n="settings.weather.auto_tag">Otomatik</span>
+            </div>
+            <button class="btn-win-secondary" onclick="refreshLiveWeather()" title="İstasyon Telemetrisini Yenile" data-i18n-title="settings.weather.refresh_tooltip">
+              <svg style="width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2;" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+              <span data-i18n="settings.weather.refresh_btn">Şimdi Yenile</span>
+            </button>
+          </div>
+
+          <div class="live-preview-body">
+            <div class="lp-left">
+              <div id="lp-icon" class="lp-icon"></div>
+              <div>
+                <div id="lp-temp" class="lp-temp">--°C</div>
+                <div id="lp-desc" class="lp-desc" data-i18n="settings.weather.fetching_data">Meteoroloji verisi alınıyor...</div>
+              </div>
+            </div>
+
+            <div class="lp-details-grid">
+              <div class="lp-detail-item"><span data-i18n="settings.weather.feels_label">Hissedilen:</span> <b id="lp-feels">--°C</b></div>
+              <div class="lp-detail-item"><span data-i18n="settings.weather.humidity_label">Nem Oranı:</span> <b id="lp-humidity">%--</b></div>
+              <div class="lp-detail-item"><span data-i18n="settings.weather.range_label">Günün Aralığı:</span> <b id="lp-range">↑ --° · ↓ --°</b></div>
+              <div class="lp-detail-item"><span data-i18n="settings.weather.wind_label">Rüzgar:</span> <b id="lp-wind">-- km/sa</b></div>
+            </div>
+          </div>
+
+          <div id="lp-forecast" class="forecast-row"></div>
+        </div>
+
+        <!-- ================= KART İÇİ HİYERARŞİK KONUM SEÇİCİ (MODALSIZ & YALNIZCA LİSTEDEN SEÇİLEBİLİR) ================= -->
+        <div class="win-card" style="padding: 18px 20px;">
+          <!-- Üst Satır: Başlık & Otomatik Butonu -->
+          <div class="card-row" style="margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 8px; background: rgba(0, 103, 192, 0.2); border: 1px solid rgba(96, 205, 255, 0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg style="width: 20px; height: 20px; stroke: var(--win-accent); fill: none; stroke-width: 2;" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <div>
+                <strong style="font-size: 14px; color: #ffffff; font-weight: 600;" data-i18n="settings.weather.station_card_title">Konum ve Meteoroloji İstasyonu</strong>
+                <p style="font-size: 11.5px; color: var(--win-text-secondary); margin-top: 1px;" data-i18n="settings.weather.station_card_sub">Yazarak arayın ve yalnızca açılır listedeki resmi kayıtlı yerleri seçin (81 İl, 973 İlçe, 80.689 Köy).</p>
+              </div>
+            </div>
+
+            <button class="btn-win-secondary" onclick="useAutoLocation()" title="Windows GPS ve IP telemetrisine dön" data-i18n-title="settings.weather.gps_tooltip">
+              <svg style="width: 13px; height: 13px; stroke: #70d87c; fill: none; stroke-width: 2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"></polygon></svg>
+              <span data-i18n="settings.weather.gps_btn">Otomatik Konum (GPS)</span>
+            </button>
+          </div>
+
+          <!-- 3 Kademeli Hiyerarşik Seçim Adımları -->
+          <div class="loc-hierarchy-grid">
+            
+            <!-- 1. Adım: İl Seçimi -->
+            <div class="loc-step-box">
+              <div class="loc-step-header">
+                <span class="loc-step-badge">1</span>
+                <span class="loc-step-title" data-i18n="settings.weather.step1_title">İl (Şehir)</span>
+                <span class="loc-step-meta" data-i18n="settings.weather.step1_meta">81 İl</span>
+              </div>
+              <div class="loc-input-wrapper">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="loc-input-il" list="loc-list-il" placeholder="İl ara veya seç (Örn: Osmaniye, Adana)..." data-i18n-placeholder="settings.weather.step1_placeholder" autocomplete="off">
+                <datalist id="loc-list-il"></datalist>
+              </div>
+            </div>
+
+            <!-- 2. Adım: İlçe Seçimi -->
+            <div class="loc-step-box">
+              <div class="loc-step-header">
+                <span class="loc-step-badge">2</span>
+                <span class="loc-step-title" data-i18n="settings.weather.step2_title">İlçe</span>
+                <span id="loc-step-ilce-badge" class="loc-step-meta">--</span>
+              </div>
+              <div class="loc-input-wrapper">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="loc-input-ilce" list="loc-list-ilce" placeholder="Önce il seçiniz..." data-i18n-placeholder="settings.weather.step2_placeholder" autocomplete="off" disabled>
+                <datalist id="loc-list-ilce"></datalist>
+              </div>
+            </div>
+
+            <!-- 3. Adım: Köy / Mahalle Seçimi -->
+            <div class="loc-step-box">
+              <div class="loc-step-header">
+                <span class="loc-step-badge">3</span>
+                <span class="loc-step-title" data-i18n="settings.weather.step3_title">Mahalle / Köy</span>
+                <span id="loc-step-mahalle-badge" class="loc-step-meta">--</span>
+              </div>
+              <div class="loc-input-wrapper">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="loc-input-mahalle" list="loc-list-mahalle" placeholder="Önce ilçe seçiniz..." data-i18n-placeholder="settings.weather.step3_placeholder" autocomplete="off" disabled>
+                <datalist id="loc-list-mahalle"></datalist>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Seçim Özeti ve Kaydetme Butonu -->
+          <div class="loc-action-bar">
+            <div id="loc-summary-text" class="loc-summary-pill">
+              <span data-i18n="settings.weather.no_loc_selected">Henüz bir konum seçilmedi. Yukarıdan il ve ilçenizi aratarak seçin.</span>
+            </div>
+            <button id="btn-save-inline-loc" class="btn-win-primary" onclick="saveInlineLocation()" disabled>
+              <svg style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span data-i18n="settings.weather.lock_save_btn">Konumu Kilitle & Kaydet</span>
+            </button>
+          </div>
+
+          <div id="status-toast" class="status-toast"></div>
+        </div>
+
+        <!-- Windows 11 InfoBar -->
+        <div class="win-infobar">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <div>
+            <strong data-i18n="settings.weather.infobar_title">Nokta Atışı Meteoroloji Bağlantısı:</strong><br>
+            <span data-i18n="settings.weather.infobar_text">Açılır menüden seçtiğiniz mahalle veya köy koordinatları Open-Meteo ve OpenStreetMap üzerinde milimetrik olarak kilitlenir. Mobil internet veya baz istasyonu kaymalarından etkilenmez.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= 2. MEDYA & SES SEKMESİ ================= -->
+      <div id="panel-media" class="tab-panel">
+        <div class="win11-page-header">
+          <h2 data-i18n="settings.media.header_title">Medya & Ses</h2>
+          <p data-i18n="settings.media.header_sub">Müzik çalar denetimi ve donanımsal ses kaydırıcı ayarları.</p>
+        </div>
+
+        <div class="win-card">
+          <div class="card-row" style="margin-bottom: 12px;">
+            <div>
+              <strong style="font-size: 13.5px; color: #ffffff; font-weight: 600;" data-i18n="settings.media.hub_title">Hızlı Başlatıcı Hub</strong>
+              <p style="font-size: 11.5px; color: var(--win-text-secondary); margin-top: 2px;" data-i18n="settings.media.hub_sub">Müzik çalmıyorken ada üzerinden doğrudan erişim butonları.</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-win-secondary" onclick="invoke('open_spotify')">
+              <svg style="width: 14px; height: 14px; fill: #1db954;" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.498 17.306c-.216.353-.674.468-1.026.253-2.812-1.718-6.351-2.106-10.521-1.152-.403.093-.807-.16-.899-.564-.092-.404.161-.807.564-.899 4.568-1.044 8.487-.601 11.628 1.336.353.216.469.674.254 1.026zm1.468-3.262c-.272.443-.852.584-1.295.312-3.22-1.979-8.129-2.55-11.938-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.136-1.028.634-1.179 4.354-1.321 9.774-.683 13.466 1.597.443.273.585.853.312 1.296zm.126-3.4c-3.861-2.293-10.229-2.505-13.896-1.391-.593.18-1.222-.16-1.402-.753-.18-.593.16-1.222.753-1.402 4.218-1.28 11.248-1.036 15.688 1.6c.534.316.708 1.01.392 1.544-.316.534-1.01.708-1.544.392z"/></svg>
+              <span data-i18n="settings.media.test_spotify">Spotify'ı Test Et</span>
+            </button>
+            <button class="btn-win-secondary" onclick="invoke('open_web_music')">
+              <svg style="width: 14px; height: 14px; fill: #ff0000;" viewBox="0 0 24 24"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.5c-4.14 0-7.5-3.36-7.5-7.5S7.86 4.5 12 4.5s7.5 3.36 7.5 7.5-3.36 7.5-7.5 7.5zm-2.25-11.25l6 3.75-6 3.75v-7.5z"/></svg>
+              <span data-i18n="settings.media.test_ytmusic">YouTube Music'i Test Et</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="win-card">
+          <div class="info-list">
+            <div class="info-row">
+              <span data-i18n="settings.media.hw_slider">Donanımsal Ses Kaydırıcı</span>
+              <strong data-i18n="settings.media.hw_slider_desc">Aktif (Win32 & pactl)</strong>
+            </div>
+            <div class="info-row">
+              <span data-i18n="settings.media.wheel_ctrl">Fare Tekerleği Kontrolü</span>
+              <strong data-i18n="settings.media.wheel_ctrl_desc">Genişletilmiş Modda Aktif (Wheel)</strong>
+            </div>
+            <div class="info-row">
+              <span data-i18n="settings.media.badge_detect">Platform Rozet Algılama</span>
+              <strong data-i18n="settings.media.badge_detect_desc">Spotify, YouTube, VLC, Tarayıcı</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3. ADA GÖRÜNÜMÜ & DİL SEKMESİ ================= -->
+      <div id="panel-island" class="tab-panel">
+        <div class="win11-page-header">
+          <h2 data-i18n="settings.island.header_title">Ada Görünümü</h2>
+          <p data-i18n="settings.island.header_sub">Dynamic Island geometri profilleri, dil ve kapatma tercihleri.</p>
+        </div>
+
+        <!-- Windows 11 Fluent Dil Seçici Kartı -->
+        <div class="win-card">
+          <div class="card-row">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 8px; background: rgba(96, 205, 255, 0.12); border: 1px solid rgba(96, 205, 255, 0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg style="width: 20px; height: 20px; stroke: var(--win-accent); fill: none; stroke-width: 2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              </div>
+              <div>
+                <strong style="font-size: 13.5px; color: #ffffff; font-weight: 600;" data-i18n="settings.language.card_title">Uygulama Dili</strong>
+                <p style="font-size: 11.5px; color: var(--win-text-secondary); margin-top: 2px;" data-i18n="settings.language.card_sub">Dinamik Ada ve Ayarlar arayüzü görüntüleme dilini seçin.</p>
+              </div>
+            </div>
+            
+            <!-- Win11 Segmented Language Control -->
+            <div class="win-segmented-control" id="lang-segmented-main">
+              <button class="seg-btn" data-lang="tr" onclick="changeAppLanguage('tr')">
+                <span class="seg-flag">🇹🇷</span>
+                <span data-i18n="settings.language.turkish">Türkçe</span>
+              </button>
+              <button class="seg-btn" data-lang="en" onclick="changeAppLanguage('en')">
+                <span class="seg-flag">🇬🇧</span>
+                <span data-i18n="settings.language.english">English</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="win-card">
+          <div class="info-list">
+            <div class="info-row">
+              <span data-i18n="settings.island.bar_mode">Bar Modu (Boşta Gizli Çizgi)</span>
+              <strong>140 x 6 px</strong>
+            </div>
+            <div class="info-row">
+              <span data-i18n="settings.island.compact_mode">Kompakt Ön İzleme (Fare Üzerindeyken)</span>
+              <strong>440 x 44 px</strong>
+            </div>
+            <div class="info-row">
+              <span data-i18n="settings.island.expanded_mode">Genişletilmiş Mod (Müzik & Hava Detayı)</span>
+              <strong>520 x 220 px</strong>
+            </div>
+            <div class="info-row">
+              <span data-i18n="settings.island.placement">Ekran Yerleşimi</span>
+              <strong data-i18n="settings.island.placement_desc">Üst Merkez (DPI Duyarlı)</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="win-card">
+          <div class="card-row">
+            <div>
+              <strong style="font-size: 13.5px; color: #ffffff; font-weight: 600;" data-i18n="settings.island.gamemode_title">Oyun Modu Koruması</strong>
+              <p style="font-size: 11.5px; color: var(--win-text-secondary); margin-top: 2px;" data-i18n="settings.island.gamemode_sub">Tam ekran bir oyuna girildiğinde ada 40x2 px gizli moda geçer.</p>
+            </div>
+            <span class="window-badge" style="color: var(--win-accent); background: rgba(96, 205, 255, 0.12); border-color: rgba(96, 205, 255, 0.25);" data-i18n="settings.island.gamemode_tag">Otomatik Dinleme</span>
+          </div>
+        </div>
+
+        <div class="win-card">
+          <div class="card-row">
+            <div>
+              <strong style="font-size: 13.5px; color: #ffffff; font-weight: 600;" data-i18n="settings.island.exit_confirm_title">Uygulamayı Kapatma Onayı</strong>
+              <p style="font-size: 11.5px; color: var(--win-text-secondary); margin-top: 2px;" data-i18n="settings.island.exit_confirm_sub">"Bir daha sorma" seçeneğini sıfırlayıp onay penceresini tekrar etkinleştirir.</p>
+            </div>
+            <button class="btn-win-secondary" onclick="resetExitConfirm()">
+              <span data-i18n="settings.island.reset_confirm_btn">Onayı Sıfırla</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 4. HAKKINDA SEKMESİ ================= -->
+      <div id="panel-about" class="tab-panel">
+        <div class="win11-page-header">
+          <h2 data-i18n="settings.about.header_title">Hakkında</h2>
+          <p data-i18n="settings.about.header_sub">Yazılım sürümü, çekirdek motoru ve lisans bilgileri.</p>
+        </div>
+
+        <div class="win-card">
+          <div class="card-row" style="margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="afk-logo" style="font-size: 15px; padding: 6px 14px;">AFK</div>
+              <div>
+                <strong style="font-size: 15px; color: #ffffff;">AFK Dynamic Island</strong>
+                <p style="font-size: 12px; color: var(--win-text-secondary);" data-i18n="settings.about.app_tagline">Windows 11 İçin Modern Apple Dynamic Island Deneyimi</p>
+              </div>
+            </div>
+            <span class="lp-tag">v0.2.1</span>
+          </div>
+
+          <div class="info-list" style="margin-top: 14px;">
+            <div class="info-row">
+              <span data-i18n="settings.about.core_engine">Çekirdek Motor</span>
+              <strong>Rust + Tauri v2</strong>
+            </div>
+            <div class="info-row">
+              <span data-i18n="settings.about.loc_db">Konum Veritabanı</span>
+              <strong data-i18n="settings.about.loc_db_desc">Modüler 81 İl, 973 İlçe, 80.689 Köy</strong>
+            </div>
+            <div class="info-row">
+              <span data-i18n="settings.about.ui_style">Arayüz Dili</span>
+              <strong data-i18n="settings.about.ui_style_desc">Windows 11 Fluent Design (Dark Mica)</strong>
+            </div>
+            <div class="info-row">
+              <span data-i18n="settings.about.developer">Geliştirici</span>
+              <strong>Alper & Antigravity</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modüler JS Mimarisi: i18n, Core, Weather, Location -->
+  <script src="i18n.js"></script>
+  <script src="settings-core.js"></script>
+  <script src="settings-weather.js"></script>
+  <script src="settings-location.js"></script>
   <script>
-    const { invoke } = window.__TAURI__.core;
-
-    async function loadCurrentCity() {
-      try {
-        const w = await invoke('get_weather');
-        // query: kullanıcının kaydettiği konum (boşsa otomatik konum kullanılıyor demektir)
-        document.getElementById('city-input').value = w.query || '';
-        document.getElementById('auto-note').textContent =
-          w.query ? '' : (w.location ? `Otomatik konum: ${w.location}` : '');
-      } catch (e) {}
-    }
-
-    async function saveCity() {
-      const city = document.getElementById('city-input').value.trim();
-      const msg = document.getElementById('status-msg');
-      try {
-        await invoke('set_city', { city });
-        msg.textContent = 'Konum kaydedildi.';
-        msg.style.color = '#30d158';
-        msg.style.display = 'block';
-      } catch (err) {
-        msg.textContent = 'Kayıt başarısız: ' + err;
-        msg.style.color = '#ff453a';
-        msg.style.display = 'block';
-      }
-      setTimeout(() => msg.style.display = 'none', 3000);
-      loadCurrentCity();
-    }
-
-    document.getElementById('city-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') saveCity();
+    // Başlangıç Yüklemesi
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCurrentWeather();
+      initLocationPicker();
     });
-
-    loadCurrentCity();
   </script>
 </body>
 </html>

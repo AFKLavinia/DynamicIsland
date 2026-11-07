@@ -37,7 +37,7 @@
           <span id="cws-temp" class="cws-temp"></span>
         </div>
         <!-- Option A/B: Hızlı Spotify Başlatıcı Pili -->
-        <button id="cws-quick-music" class="cws-quick-music-btn" onclick="openSpotify(event)" title="Spotify'ı Aç">
+        <button id="cws-quick-music" class="cws-quick-music-btn" onclick="openSpotify(event)" title="Spotify'ı Aç" data-i18n-title="island.tooltips.spotify">
           <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.498 17.306c-.216.353-.674.468-1.026.253-2.812-1.718-6.351-2.106-10.521-1.152-.403.093-.807-.16-.899-.564-.092-.404.161-.807.564-.899 4.568-1.044 8.487-.601 11.628 1.336.353.216.469.674.254 1.026zm1.468-3.262c-.272.443-.852.584-1.295.312-3.22-1.979-8.129-2.55-11.938-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.136-1.028.634-1.179 4.354-1.321 9.774-.683 13.466 1.597.443.273.585.853.312 1.296zm.126-3.4c-3.861-2.293-10.229-2.505-13.896-1.391-.593.18-1.222-.16-1.402-.753-.18-.593.16-1.222.753-1.402 4.218-1.28 11.248-1.036 15.688 1.6c.534.316.708 1.01.392 1.544-.316.534-1.01.708-1.544.392z"/></svg>
         </button>
       </div>
@@ -52,16 +52,21 @@
         <div>
           <button class="tab-btn active" onclick="switchTab('music', this)">
             <svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-            Müzik
+            <span data-i18n="island.tabs.music">Müzik</span>
           </button>
           <button class="tab-btn" onclick="switchTab('weather', this)">
             <svg class="icon" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
-            Hava Durumu
+            <span data-i18n="island.tabs.weather">Hava Durumu</span>
           </button>
         </div>
-        <button class="tab-btn" onclick="openSettingsWindow()">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </button>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button class="tab-btn" onclick="openSettingsWindow()" title="Ayarlar" data-i18n-title="island.tooltips.settings">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </button>
+          <button class="tab-btn btn-exit" onclick="handleExitClick(event)" title="Dynamic Island'ı Kapat" data-i18n-title="island.tooltips.exit">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+          </button>
+        </div>
       </div>
 
       <!-- Müzik Paneli -->
@@ -70,7 +75,7 @@
           <div id="music-cover-wrapper" class="music-album-art" style="visibility:visible;">
             <img id="music-cover-img" style="width:100%; height:100%; border-radius:14px; object-fit:cover; display:none;" alt="" />
             <svg id="music-fallback-icon" class="icon" style="width:38px; height:38px; color:#5c5c5e; display:none;" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-            <div id="spotify-logo-icon" style="display:none; align-items:center; justify-content:center; cursor:pointer;" onclick="openSpotify()" title="Spotify'ı Aç">
+            <div id="spotify-logo-icon" style="display:none; align-items:center; justify-content:center; cursor:pointer;" onclick="openSpotify()" title="Spotify'ı Aç" data-i18n-title="island.tooltips.spotify">
               <svg viewBox="0 0 24 24" style="width:44px; height:44px; fill:#1db954;"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.498 17.306c-.216.353-.674.468-1.026.253-2.812-1.718-6.351-2.106-10.521-1.152-.403.093-.807-.16-.899-.564-.092-.404.161-.807.564-.899 4.568-1.044 8.487-.601 11.628 1.336.353.216.469.674.254 1.026zm1.468-3.262c-.272.443-.852.584-1.295.312-3.22-1.979-8.129-2.55-11.938-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.136-1.028.634-1.179 4.354-1.321 9.774-.683 13.466 1.597.443.273.585.853.312 1.296zm.126-3.4c-3.861-2.293-10.229-2.505-13.896-1.391-.593.18-1.222-.16-1.402-.753-.18-.593.16-1.222.753-1.402 4.218-1.28 11.248-1.036 15.688 1.6c.534.316.708 1.01.392 1.544-.316.534-1.01.708-1.544.392z"/></svg>
             </div>
           </div>
@@ -94,11 +99,11 @@
 
             <!-- Option B: Idle Hızlı Medya Başlatıcı Hub -->
             <div id="launcher-row" class="launcher-row" style="display:none;">
-              <button class="launcher-btn spotify" onclick="openSpotify(event)" title="Spotify'ı Başlat">
+              <button class="launcher-btn spotify" onclick="openSpotify(event)" title="Spotify'ı Başlat" data-i18n-title="island.tooltips.spotify">
                 <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.498 17.306c-.216.353-.674.468-1.026.253-2.812-1.718-6.351-2.106-10.521-1.152-.403.093-.807-.16-.899-.564-.092-.404.161-.807.564-.899 4.568-1.044 8.487-.601 11.628 1.336.353.216.469.674.254 1.026zm1.468-3.262c-.272.443-.852.584-1.295.312-3.22-1.979-8.129-2.55-11.938-1.393-.497.151-1.028-.135-1.179-.633-.151-.498.136-1.028.634-1.179 4.354-1.321 9.774-.683 13.466 1.597.443.273.585.853.312 1.296zm.126-3.4c-3.861-2.293-10.229-2.505-13.896-1.391-.593.18-1.222-.16-1.402-.753-.18-.593.16-1.222.753-1.402 4.218-1.28 11.248-1.036 15.688 1.6c.534.316.708 1.01.392 1.544-.316.534-1.01.708-1.544.392z"/></svg>
                 <span>Spotify</span>
               </button>
-              <button class="launcher-btn ytmusic" onclick="openWebMusic(event)" title="YouTube Music'i Başlat">
+              <button class="launcher-btn ytmusic" onclick="openWebMusic(event)" title="YouTube Music'i Başlat" data-i18n-title="island.tooltips.ytmusic">
                 <svg viewBox="0 0 24 24"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.5c-4.14 0-7.5-3.36-7.5-7.5S7.86 4.5 12 4.5s7.5 3.36 7.5 7.5-3.36 7.5-7.5 7.5zm-2.25-11.25l6 3.75-6 3.75v-7.5z"/></svg>
                 <span>YT Music</span>
               </button>
@@ -130,11 +135,11 @@
 
               <!-- iOS Tarzı Ses Kaydırıcı -->
               <div id="volume-row" class="volume-row">
-                <button id="vol-mute-btn" class="vol-icon-btn" onclick="apiToggleMute()" title="Sesi Aç/Kapat">
+                <button id="vol-mute-btn" class="vol-icon-btn" onclick="apiToggleMute()" title="Sesi Aç/Kapat" data-i18n-title="island.tooltips.mute">
                   <svg id="ico-vol-high" class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                   <svg id="ico-vol-mute" class="icon" style="display:none;" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
                 </button>
-                <div id="vol-slider-track" class="vol-slider-track" onclick="handleVolClick(event)" title="Ses Düzeyi">
+                <div id="vol-slider-track" class="vol-slider-track" onclick="handleVolClick(event)" title="Ses Düzeyi" data-i18n-title="island.tooltips.volume">
                   <div id="vol-slider-fill" class="vol-slider-fill"></div>
                 </div>
               </div>
@@ -164,9 +169,29 @@
         </div>
       </div>
     </div>
+
+    <!-- Uygulamayı Kapatma Onay Modalı -->
+    <div id="exit-modal" class="exit-modal" style="display:none;" onclick="cancelExit(event)">
+      <div class="exit-dialog" onclick="event.stopPropagation()">
+        <div class="exit-icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+        </div>
+        <div class="exit-title" data-i18n="island.exit_modal.title">Dynamic Island Kapatılsın mı?</div>
+        <div class="exit-desc" data-i18n="island.exit_modal.desc">Uygulamadan tamamen çıkmak istediğinize emin misiniz?</div>
+        <label class="exit-checkbox-label">
+          <input type="checkbox" id="dont-ask-exit">
+          <span data-i18n="island.exit_modal.dont_ask">Bir daha sorma</span>
+        </label>
+        <div class="exit-btn-row">
+          <button class="exit-btn cancel" onclick="cancelExit(event)" data-i18n="island.exit_modal.cancel">Vazgeç</button>
+          <button class="exit-btn confirm" onclick="confirmExit(event)" data-i18n="island.exit_modal.confirm">Kapat</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Modüler JavaScript Mimarisi (Single Responsibility) -->
+  <script src="i18n.js"></script>
   <script src="island.js"></script>
   <script src="weather.js"></script>
   <script src="audio.js"></script>

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------
 
 let lastCover = null;
+let currentTrackKey = '';
 let currentHasMusic = false;
 window.currentHasMusic = false;
 let currentSpotifyAvailable = false;
@@ -11,22 +12,19 @@ let currentPosSecs = 0;
 let currentDurSecs = 0;
 let isPlaying = false;
 
-function setImg(img, src, fallback) {
+function setImg(img, src) {
   if (!img) return;
   if (src && src.trim().length > 0) {
     if (img.src !== src) {
       img.src = src;
       img.onerror = () => {
         img.style.display = 'none';
-        if (fallback) fallback.style.display = 'block';
       };
     }
     img.style.display = 'block';
-    if (fallback) fallback.style.display = 'none';
   } else {
     img.removeAttribute('src');
     img.style.display = 'none';
-    if (fallback) fallback.style.display = 'block';
   }
 }
 
@@ -87,7 +85,7 @@ setInterval(() => {
 function detectSource(app, title) {
   const a = (app || '').toLowerCase();
   const t = (title || '').toLowerCase();
-  if (a.includes('spotify') || t.includes('spotify') || currentSpotifyAvailable) {
+  if (a.includes('spotify') || t.includes('spotify')) {
     return {
       name: 'Spotify',
       color: '#1db954',
@@ -105,7 +103,7 @@ function detectSource(app, title) {
   }
   if (a.includes('chrome') || a.includes('edge') || a.includes('brave') || a.includes('firefox') || a.includes('opera')) {
     return {
-      name: 'Tarayıcı',
+      name: window.t ? window.t('island.music.browser') : 'Tarayıcı',
       color: '#64d2ff',
       bg: 'rgba(100, 210, 255, 0.15)',
       svg: '<svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'
@@ -120,7 +118,7 @@ function detectSource(app, title) {
     };
   }
   return {
-    name: 'Sistem Medyası',
+    name: window.t ? window.t('island.music.system_media') : 'Sistem Medyası',
     color: '#8e8e93',
     bg: 'rgba(142, 142, 147, 0.15)',
     svg: '<svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'
@@ -130,14 +128,14 @@ function detectSource(app, title) {
 async function checkMusic() {
   try {
     const m = await invoke('check_music');
-    // Müzik çalıyor kabul edilmesi için:
+    // Müzik oturumu var kabul edilmesi için:
     // 1) has_music true olmalı
-    // 2) playing true olmalı (müzik fiilen çalıyor olmalı)
-    // 3) Şarkı başlığı boş veya sadece boşluk olmamalı
+    // 2) Şarkı başlığı boş veya sadece boşluk olmamalı
     const hasValidTitle = !!(m && m.title && m.title.trim().length > 0);
-    const isPlayingNow = !!(m && m.has_music && m.playing && hasValidTitle);
-    currentHasMusic = isPlayingNow;
-    window.currentHasMusic = isPlayingNow;
+    const hasActiveSession = !!(m && m.has_music && hasValidTitle);
+    currentHasMusic = hasActiveSession;
+    window.currentHasMusic = hasActiveSession;
+    isPlaying = !!(m && m.playing);
     currentSpotifyAvailable = !!(m && m.spotify_available);
 
     // 1. Kompakt Ön İzleme Yönetimi (Fareyle üzerine gelindiğinde)
@@ -177,26 +175,6 @@ async function checkMusic() {
       if (progRow) progRow.style.display = 'flex';
       if (volRow) volRow.style.display = 'inline-flex';
 
-      setText('music-title', m.title || '');
-      setText('music-artist', m.artist || m.app || '');
-
-      const cover = m.cover_url || '';
-      if (cover !== lastCover) {
-        lastCover = cover;
-        setImg(document.getElementById('compact-cover'), cover, null);
-        setImg(img, cover, fallbackIcon);
-      }
-
-      // Feature 1: Ambient Dynamic Glow Arka Plan
-      if (glow) {
-        if (cover) {
-          glow.style.backgroundImage = `url("${cover}")`;
-          glow.style.opacity = '0.38';
-        } else {
-          glow.style.opacity = '0';
-        }
-      }
-
       // Feature 3: Platform Rozeti (Badge)
       const badge = detectSource(m.app, m.title);
       if (badgeEl && badgeIcon && badgeName) {
@@ -205,6 +183,37 @@ async function checkMusic() {
         badgeIcon.innerHTML = badge.svg;
         badgeName.textContent = badge.name;
         badgeEl.style.display = 'inline-flex';
+      }
+
+      setText('music-title', m.title || '');
+      const cleanArtist = (m.artist && m.artist.trim().length > 0) ? m.artist.trim() : (badge.name || '');
+      setText('music-artist', cleanArtist);
+
+      if (m.cover_changed) {
+        const cover = m.cover_url || '';
+        lastCover = cover;
+        const compactCover = document.getElementById('compact-cover');
+        if (cover) {
+          if (wrapper) wrapper.style.display = 'flex';
+          setImg(compactCover, cover);
+          setImg(img, cover);
+          if (fallbackIcon) fallbackIcon.style.display = 'none';
+        } else {
+          setImg(compactCover, '');
+          setImg(img, '');
+          if (fallbackIcon) fallbackIcon.style.display = 'flex';
+          if (wrapper) wrapper.style.display = 'flex';
+        }
+
+        // Feature 1: Ambient Dynamic Glow Arka Plan
+        if (glow) {
+          if (cover) {
+            glow.style.backgroundImage = `url("${cover}")`;
+            glow.style.opacity = '0.38';
+          } else {
+            glow.style.opacity = '0';
+          }
+        }
       }
 
       // Feature 5: Canlı Audio Spectrum / Visualizer (8 Bar)
@@ -219,11 +228,30 @@ async function checkMusic() {
         visBars.forEach(b => b.style.background = badge.color);
       }
 
-      // Feature 4: Zaman Çizelgesi (Track Timeline Progress)
+      // Feature 4: Zaman Çizelgesi (Track Timeline Progress) & Drift Düzeltme
       isPlaying = !!m.playing;
-      currentPosSecs = m.position_secs || 0;
-      currentDurSecs = m.duration_secs || 0;
-      updateProgressUI();
+      const trackKey = `${m.app || ''}:${m.artist || ''}:${m.title || ''}`;
+      const trackChanged = (trackKey !== currentTrackKey);
+
+      if (trackChanged) {
+        currentTrackKey = trackKey;
+        currentPosSecs = m.position_secs || 0;
+        currentDurSecs = m.duration_secs || 0;
+        updateProgressUI();
+      } else {
+        currentDurSecs = m.duration_secs || 0;
+        if (isPlaying) {
+          // Canlı çalarken: Sadece kullanıcı seek yaptığında (>2sn sapma) eşitle, 1s yerel sayaç kesintisiz aksın
+          const drift = Math.abs(currentPosSecs - (m.position_secs || 0));
+          if (drift > 2) {
+            currentPosSecs = m.position_secs || 0;
+            updateProgressUI();
+          }
+        } else {
+          currentPosSecs = m.position_secs || 0;
+          updateProgressUI();
+        }
+      }
 
       setDisplay('ico-play', m.playing ? 'none' : 'inline-block');
       setDisplay('ico-pause', m.playing ? 'inline-block' : 'none');
@@ -247,7 +275,7 @@ async function checkMusic() {
         badgeEl.style.color = '#30d158';
         badgeEl.style.background = 'rgba(48, 209, 88, 0.14)';
         badgeIcon.innerHTML = '<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#30d158; box-shadow:0 0 6px #30d158;"></span>';
-        badgeName.textContent = 'Dinlemeye Hazır';
+        badgeName.textContent = window.t ? window.t('island.music.ready_badge') : 'Dinlemeye Hazır';
         badgeEl.style.display = 'inline-flex';
       }
 
@@ -261,10 +289,11 @@ async function checkMusic() {
 
       if (hasValidTitle) {
         setText('music-title', m.title);
-        setText('music-artist', [m.artist, 'Duraklatıldı'].filter(Boolean).join(' · '));
+        const pausedLabel = window.t ? window.t('island.music.paused') : 'Duraklatıldı';
+        setText('music-artist', [m.artist, pausedLabel].filter(Boolean).join(' · '));
       } else {
-        setText('music-title', 'Müzik Dinlemeye Başla');
-        setText('music-artist', 'Klavyeden Oynat tuşuna veya başlatıcılara basın');
+        setText('music-title', window.t ? window.t('island.music.idle_title') : 'Müzik Dinlemeye Başla');
+        setText('music-artist', window.t ? window.t('island.music.idle_sub') : 'Klavyeden Oynat tuşuna veya başlatıcılara basın');
       }
 
       // Hızlı Medya Başlatıcı Hub
@@ -276,6 +305,13 @@ async function checkMusic() {
       setDisplay('ico-pause', 'none');
     }
   } catch (e) {}
+}
+
+// Dil değiştiğinde müzik arayüzünü anında güncelle
+if (window.i18n && window.i18n.onLanguageChange) {
+  window.i18n.onLanguageChange(() => {
+    checkMusic();
+  });
 }
 
 window.checkMusic = checkMusic;

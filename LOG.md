@@ -4,6 +4,40 @@ Bu dosya, Dynamic Island projesinde yapılan her geliştirme, hata düzeltmesi, 
 
 ---
 
+## [2026-11-06] - Güvenli Uygulama Kapatma Düğmesi & "Bir Daha Sorma" Onay Modalı
+### 🚀 Yapılanlar & Geliştirmeler:
+- **Korumalı Kapatma Düğmesi ([`index.html`](file:///c:/Users/Alper/Documents/GitHub/DynamicIsland/tauri-island/src/index.html) & [`styles.css`](file:///c:/Users/Alper/Documents/GitHub/DynamicIsland/tauri-island/src/styles.css)):**
+  - Genişletilmiş adanın sağ üst başlık çubuğuna, ayarlar dişli simgesinin hemen yanına yanlışlıkla basılmayacak küçük ve zarif bir kapatma (power/exit) butonu yerleştirildi (`.tab-btn.btn-exit`).
+  - Yanlışlıkla dokunulduğunda kazaen kapanmaması için hafif gri renkli, üzerine gelindiğinde kırmızıya dönüşen bir görsel güvenlik sağlandı.
+- **Apple Tarzı Kapatma Onay Modalı (`#exit-modal`):**
+  - Düğmeye basıldığında adanın üzerine açılan şık cam efektli (blur) onay diyaloğu eklendi.
+  - "Dynamic Island Kapatılsın mı? Uygulamadan tamamen çıkmak istediğinize emin misiniz?" uyarısı, "Vazgeç" ve "Kapat" butonları yerleştirildi.
+  - **"Bir daha sorma" Seçeneği:** Checkbox işaretlenip kapatıldığında `localStorage` üzerinden kalıcı olarak kaydedilir; sonraki tıklamalarda doğrudan kapanır.
+  - **Onayı Sıfırlama İmkanı:** Ayarlar penceresi "Ada Görünümü" sekmesine *"Kapatma Onayı Durumu - Onayı Sıfırla"* butonu eklenerek kullanıcının istediği zaman onay kutusunu tekrar aktif edebilmesi sağlandı.
+- **Backend Kapatma Komutu ([`window.rs`](file:///c:/Users/Alper/Documents/GitHub/DynamicIsland/tauri-island/src-tauri/src/window.rs) & [`app.rs`](file:///c:/Users/Alper/Documents/GitHub/DynamicIsland/tauri-island/src-tauri/src/app.rs)):**
+  - `exit_app(app_handle)` Tauri komutu yazılarak `app_handle.exit(0)` ile uygulamanın temiz ve eksiksiz sonlandırılması sağlandı.
+
+---
+
+## [2026-11-06] - AFK Ayarlar Merkezi: Geniş Split Panel (720x520), AFK Logosu ve Zengin Hava Durumu Sekmesi
+### 🚀 Yapılanlar & Geliştirmeler:
+- **Pencere Boyutları & AFK Başlık Yapılandırması (`window.rs`):**
+  - Ayarlar penceresi boyutu `440x320 px`'den **`720x520 px`**'e çıkarıldı.
+  - Pencere başlığı `"AFK Dynamic Island Ayarları"` yapıldı.
+- **AFK Marka Logosu & Başlık Alanı (`settings.html`):**
+  - Üst başlığa degradeli (gradient) modern neon/cam efektli **AFK** logosu (`.afk-logo`) ve "AFK Çekirdek Aktif" yeşil nabız göstergesi yerleştirildi.
+- **macOS / iOS Tarzı Çoklu Sekme Mimarisi (`settings.html`):**
+  - **🌤️ Hava Durumu Sekmesi (Özel Geliştirme):**
+    1. **Canlı Telemetri & İstasyon Kartı:** Anlık konum, sıcaklık, WMO hava durumu SVG ikonu, hissedilen, nem oranı, günün derece aralığı (`↑ max° · ↓ min°`), rüzgar hızı ve 3 günlük tahmin mini kartları canlı görselleştirildi. "Şimdi Yenile" test butonu eklendi.
+    2. **Otomatik Konum Algılama:** Tek tıkla Windows Geolocation ve HTTPS IP telemetrisine dönen `useAutoLocation()` butonu.
+    3. **Popüler Şehirler Hızlı Seçim Hapları:** `İstanbul`, `Ankara`, `İzmir`, `Eskişehir`, `Bursa`, `Antalya`, `Trabzon`, `Adana`, `Gaziantep`, `Londra`, `Berlin`, `Tokyo`, `New York` butonları; tıklanır tıklanmaz konumu anında kaydeder, test eder ve ada ile senkronize eder.
+    4. **Manuel Şehir Girişi:** Akıllı arama çubuğu ve anlık durum toast bildirimleri.
+  - **🎵 Medya & Ses Sekmesi:** Spotify ve YouTube Music hızlı test butonları, donanımsal ses kaydırıcı ve fare tekerlek kontrol bilgileri.
+  - **🖥️ Ada Görünümü Sekmesi:** Ada geometri profilleri tablosu (140x6, 440x44, 520x220) ve tam ekran oyun modu koruması.
+  - **ℹ️ Hakkında Sekmesi:** AFK Dynamic Island v0.2.0, Rust Tauri v2 motoru ve sistem bilgileri.
+
+---
+
 ## [2026-11-06] - Ön İzleme Geometrisinin Genişletilmesi (360px -> 440px) & Tipografi Optimizasyonu
 ### 🚀 Yapılanlar:
 - **Kompakt Ön İzleme Boyutlarının Genişletilmesi (`island.js` & `styles.css`):**

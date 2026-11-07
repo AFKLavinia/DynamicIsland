@@ -33,17 +33,30 @@ window.setDisplay = setDisplay;
 
 async function setMode(mode) {
   if (currentMode === mode) return;
+  const oldMode = currentMode;
   currentMode = mode;
   window.currentMode = mode;
 
   const s = SIZES[mode] || SIZES['bar'];
+  const oldSize = SIZES[oldMode] || SIZES['bar'];
 
-  if (mode === 'compact' || mode === 'expanded') {
+  // Boyut Büyüyor mu? (Örn: bar -> compact, compact -> expanded)
+  const isExpanding = (s.w > oldSize.w) || (s.h > oldSize.h);
+
+  if (isExpanding) {
+    // Büyürken: Önce OS penceresini genişlet, 2 rAF ile DirectComposition tamponunun senkronize olmasını bekle (siyah/beyaz flaş yok)
     try {
       await invoke('set_island_size', { width: s.w, height: s.h });
     } catch (e) {}
-    island.className = `island ${mode}`;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (currentMode === mode) {
+          island.className = `island ${mode}`;
+        }
+      });
+    });
   } else {
+    // Küçülürken: Önce CSS animasyonunu küçült (380ms), ardından pencereyi daralt (176px ani kırpılma yok!)
     island.className = `island ${mode}`;
     setTimeout(async () => {
       if (currentMode === mode) {
@@ -66,26 +79,72 @@ function openSettingsWindow() {
   invoke('open_settings_window');
 }
 
+function handleExitClick(e) {
+  if (e) e.stopPropagation();
+  const skip = localStorage.getItem('skip_exit_confirm');
+  if (skip === 'true') {
+    invoke('exit_app');
+    return;
+  }
+  const modal = document.getElementById('exit-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+}
+
+function cancelExit(e) {
+  if (e) e.stopPropagation();
+  const modal = document.getElementById('exit-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+function confirmExit(e) {
+  if (e) e.stopPropagation();
+  const checkbox = document.getElementById('dont-ask-exit');
+  if (checkbox && checkbox.checked) {
+    localStorage.setItem('skip_exit_confirm', 'true');
+  }
+  invoke('exit_app');
+}
+
+window.handleExitClick = handleExitClick;
+window.cancelExit = cancelExit;
+window.confirmExit = confirmExit;
+
 // ---------------------------------------------------------------------------
 // Ada Fare Etkileşimleri
 // ---------------------------------------------------------------------------
+
+let hoverDebounceTimer = null;
 
 island.addEventListener('mouseenter', () => {
   if (collapseTimeout) {
     clearTimeout(collapseTimeout);
     collapseTimeout = null;
   }
-
-  if (inGame) {
-    hoverTimeout = setTimeout(() => setMode('compact'), 3800);
-  } else {
-    if (currentMode === 'bar') {
-      setMode('compact');
-    }
+  if (hoverDebounceTimer) {
+    clearTimeout(hoverDebounceTimer);
   }
+
+  // 90ms hover-intent: tarayıcı sekmelerini kapatırken yanlışlıkla tetiklenmeyi önler
+  hoverDebounceTimer = setTimeout(() => {
+    if (inGame) {
+      hoverTimeout = setTimeout(() => setMode('compact'), 2500);
+    } else {
+      if (currentMode === 'bar') {
+        setMode('compact');
+      }
+    }
+  }, 90);
 });
 
 island.addEventListener('mouseleave', () => {
+  if (hoverDebounceTimer) {
+    clearTimeout(hoverDebounceTimer);
+    hoverDebounceTimer = null;
+  }
   clearTimeout(hoverTimeout);
   if (collapseTimeout) clearTimeout(collapseTimeout);
 
@@ -100,7 +159,7 @@ island.addEventListener('mouseleave', () => {
 });
 
 island.addEventListener('click', (e) => {
-  if (e.target.closest('button') || e.target.closest('.vol-slider-track') || e.target.closest('.track-progress-bar')) return;
+  if (e.target.closest('button') || e.target.closest('.vol-slider-track') || e.target.closest('.track-progress-bar') || e.target.closest('.exit-dialog')) return;
   if (collapseTimeout) clearTimeout(collapseTimeout);
 
   if (currentMode === 'bar') {

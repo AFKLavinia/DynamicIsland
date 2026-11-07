@@ -20,7 +20,7 @@ DynamicIsland/
     │   ├── weather.js         # Hava durumu vektörel SVG, WMO kodları ve tahmin kartları (135 satır)
     │   ├── audio.js           # iOS ses kaydırıcı, mute toggle ve fare tekerlek kontrolü (60 satır)
     │   ├── music.js           # GSMTC/MPRIS medya, Spotify, kapak, rozet ve zaman çizelgesi (240 satır)
-    │   └── settings.html      # Bağımsız sabit Ayarlar penceresi arayüzü
+    │   └── settings.html      # AFK Ayarlar Merkezi: 720x520 geniş split panel, hava durumu sekmesi, hızlı şehirler ve canlı test kartı
     ├── package.json           # Node / Tauri CLI bağımlılıkları
     └── src-tauri/             # Saf Rust Çekirdek (Backend - SRP & DRY Mimarisi)
         ├── Cargo.toml         # Rust bağımlılıkları (windows GSMTC, mpris Linux, reqwest, serde, tokio)
@@ -46,7 +46,7 @@ DynamicIsland/
 - **`models.rs`**: Tüm veri transfer nesneleri (`ForecastDay`, `WeatherData`, `MusicData`, `GameData`, `AppState`).
 - **`utils.rs`**: `percent_encode`, `base64_encode`, `sniff_mime`, `sanitize_music_query` gibi genel yardımcılar.
 - **`audio.rs`**: Windows `keybd_event` ve Linux `pactl` ile çalışan `change_volume(step)` komutu.
-- **`window.rs`**: `open_settings_window`, dinamik DPI ofsetli `set_island_size`, `check_game_mode`.
+- **`window.rs`**: `open_settings_window`, dinamik DPI ofsetli `set_island_size`, `check_game_mode`, `exit_app` (uygulamayı kapatma).
 - **`weather.rs`**: Windows Geolocation, IP telemetrisi, Open-Meteo REST API (20ms), wttr.in fallback ve otonom arka plan sorgulayıcı.
 - **`media.rs`**: WinRT GSMTC (Windows) / MPRIS (Linux) oturum okuma, Spotify tespiti/başlatma (`open_spotify`), Web müzik/YouTube Music başlatma (`open_web_music`), yerel klasör taraması ve Deezer/iTunes kapak arayıcısı.
 - **`app.rs`**: Tauri runtime builder, setup hook, başlangıç boyutlandırması ve invoke registry.

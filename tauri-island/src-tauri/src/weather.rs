@@ -11,13 +11,17 @@ pub fn city_path(app: &tauri::AppHandle) -> Option<std::path::PathBuf> {
 fn get_device_os_location() -> Option<(f64, f64)> {
     use windows::Devices::Geolocation::Geolocator;
     let geolocator = Geolocator::new().ok()?;
-    let timeout = windows::Foundation::TimeSpan { Duration: 30_000_000 };
-    let max_age = windows::Foundation::TimeSpan { Duration: 3_000_000_000 };
-    let pos = geolocator
-        .GetGeopositionAsyncWithAgeAndTimeout(max_age, timeout)
-        .ok()?
-        .get()
-        .ok()?;
+    let pos = if let Ok(op) = geolocator.GetGeopositionAsync() {
+        op.get().ok()
+    } else {
+        let timeout = windows::Foundation::TimeSpan { Duration: 30_000_000 };
+        let max_age = windows::Foundation::TimeSpan { Duration: 3_000_000_000 };
+        geolocator
+            .GetGeopositionAsyncWithAgeAndTimeout(max_age, timeout)
+            .ok()?
+            .get()
+            .ok()
+    }?;
     let coord = pos.Coordinate().ok()?;
     if let Ok(point) = coord.Point() {
         if let Ok(pos) = point.Position() {
@@ -34,11 +38,74 @@ fn get_device_os_location() -> Option<(f64, f64)> {
     None
 }
 
+async fn reverse_geocode_coords(client: &reqwest::Client, lat: f64, lon: f64) -> Option<String> {
+    // 1. BigDataCloud yüksek hızlı Türkçe ters jeokodlama (nokta atışı ilçe / il)
+    let bdc_url = format!(
+        "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={:.4}&longitude={:.4}&localityLanguage=tr",
+        lat, lon
+    );
+    if let Ok(resp) = client.get(&bdc_url).send().await {
+        if let Ok(json) = resp.json::<serde_json::Value>().await {
+            let city = json.get("city").and_then(|c| c.as_str()).unwrap_or("");
+            let locality = json.get("locality").and_then(|l| l.as_str()).unwrap_or("");
+            let admin = json.get("principalSubdivision").and_then(|p| p.as_str()).unwrap_or("");
+
+            let town = if !city.is_empty() { city } else { locality };
+            if !town.is_empty() && !admin.is_empty() && town != admin {
+                return Some(format!("{}, {}", town, admin));
+            } else if !town.is_empty() {
+                return Some(town.to_string());
+            } else if !admin.is_empty() {
+                return Some(admin.to_string());
+            }
+        }
+    }
+
+    // 2. Yedek: OpenStreetMap Nominatim
+    let osm_url = format!(
+        "https://nominatim.openstreetmap.org/reverse?lat={:.4}&lon={:.4}&format=json&accept-language=tr",
+        lat, lon
+    );
+    if let Ok(resp) = client.get(&osm_url).send().await {
+        if let Ok(json) = resp.json::<serde_json::Value>().await {
+            if let Some(addr) = json.get("address") {
+                let district = addr.get("district")
+                    .or_else(|| addr.get("town"))
+                    .or_else(|| addr.get("county"))
+                    .or_else(|| addr.get("city"))
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
+                let province = addr.get("province")
+                    .or_else(|| addr.get("state"))
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
+                if !district.is_empty() && !province.is_empty() && district != province {
+                    return Some(format!("{}, {}", district, province));
+                } else if !district.is_empty() {
+                    return Some(district.to_string());
+                } else if !province.is_empty() {
+                    return Some(province.to_string());
+                }
+            }
+        }
+    }
+
+    None
+}
+
 async fn detect_location(client: &reqwest::Client) -> Option<(String, Option<(f64, f64)>)> {
-    // 1. Cihazın yerel sensöründen dene (Windows Geolocator)
+    // 1. Cihazın yerel sensöründen dene (Windows Geolocator - GPS / Wi-Fi / Varsayılan Konum)
     let device_coords = tokio::task::spawn_blocking(get_device_os_location).await.ok().flatten();
 
-    // 2. IP telemetrisinden şehir ve koordinatları çöz (HTTPS ipwho.is)
+    if let Some((lat, lon)) = device_coords {
+        // Cihaz koordinatları bulundu! Ters jeokodlama ile operatör IP'sine aldanmadan gerçek konumu çöz
+        let display = reverse_geocode_coords(client, lat, lon)
+            .await
+            .unwrap_or_else(|| format!("{:.2}, {:.2}", lat, lon));
+        return Some((display, Some((lat, lon))));
+    }
+
+    // 2. Cihaz sensörü yoksa IP telemetrisinden şehir ve koordinatları çöz (HTTPS ipwho.is)
     if let Ok(resp) = client.get("https://ipwho.is/").send().await {
         if let Ok(json) = resp.json::<serde_json::Value>().await {
             if json.get("success").and_then(|s| s.as_bool()).unwrap_or(false) {
@@ -62,17 +129,17 @@ async fn detect_location(client: &reqwest::Client) -> Option<(String, Option<(f6
                     country.to_string()
                 };
 
-                let coords = device_coords.or_else(|| match (lat, lon) {
+                let coords = match (lat, lon) {
                     (Some(la), Some(lo)) if la != 0.0 || lo != 0.0 => Some((la, lo)),
                     _ => None,
-                });
+                };
 
                 return Some((display, coords));
             }
         }
     }
 
-    // 3. İkinci HTTPS IP servisi (freeipapi.com)
+    // 3. İkinci yedek HTTPS IP servisi (freeipapi.com)
     if let Ok(resp) = client.get("https://freeipapi.com/api/json").send().await {
         if let Ok(json) = resp.json::<serde_json::Value>().await {
             let city = json.get("cityName").and_then(|c| c.as_str()).unwrap_or("");
@@ -91,20 +158,15 @@ async fn detect_location(client: &reqwest::Client) -> Option<(String, Option<(f6
                 country.to_string()
             };
 
-            let coords = device_coords.or_else(|| match (lat, lon) {
+            let coords = match (lat, lon) {
                 (Some(la), Some(lo)) if la != 0.0 || lo != 0.0 => Some((la, lo)),
                 _ => None,
-            });
+            };
 
             if !display.is_empty() || coords.is_some() {
                 return Some((display, coords));
             }
         }
-    }
-
-    // 4. Cihaz koordinatları varsa
-    if let Some(coords) = device_coords {
-        return Some((String::new(), Some(coords)));
     }
 
     None
@@ -145,23 +207,74 @@ fn wind_deg_to_16point(deg: f64) -> &'static str {
 }
 
 async fn geocode_city(client: &reqwest::Client, city: &str) -> Option<(String, f64, f64)> {
+    let city_trimmed = city.trim();
+
+    // 1. Birincil: Open-Meteo Geocoding API
     let url = format!(
         "https://geocoding-api.open-meteo.com/v1/search?name={}&count=1&language=tr&format=json",
-        percent_encode(city)
+        percent_encode(city_trimmed)
     );
-    let resp = client.get(&url).send().await.ok()?;
-    let json = resp.json::<serde_json::Value>().await.ok()?;
-    let first = json.get("results")?.as_array()?.first()?;
-    let name = first.get("name").and_then(|v| v.as_str()).unwrap_or(city);
-    let country = first.get("country").and_then(|v| v.as_str()).unwrap_or("");
-    let lat = first.get("latitude").and_then(|v| v.as_f64())?;
-    let lon = first.get("longitude").and_then(|v| v.as_f64())?;
-    let display = if !country.is_empty() && country != name {
-        format!("{}, {}", name, country)
-    } else {
-        name.to_string()
-    };
-    Some((display, lat, lon))
+    if let Ok(resp) = client.get(&url).send().await {
+        if let Ok(json) = resp.json::<serde_json::Value>().await {
+            if let Some(first) = json.get("results").and_then(|r| r.as_array()).and_then(|a| a.first()) {
+                let name = first.get("name").and_then(|v| v.as_str()).unwrap_or(city_trimmed);
+                let country = first.get("country").and_then(|v| v.as_str()).unwrap_or("");
+                let lat = first.get("latitude").and_then(|v| v.as_f64());
+                let lon = first.get("longitude").and_then(|v| v.as_f64());
+                if let (Some(la), Some(lo)) = (lat, lon) {
+                    let display = if !country.is_empty() && country != name {
+                        format!("{}, {}", name, country)
+                    } else {
+                        name.to_string()
+                    };
+                    return Some((display, la, lo));
+                }
+            }
+        }
+    }
+
+    // 2. İkincil: OpenStreetMap Nominatim (Mahalle, Köy, Sokak seviyesi ham veri desteği)
+    let osm_url = format!(
+        "https://nominatim.openstreetmap.org/search?q={}&format=json&limit=1&accept-language=tr",
+        percent_encode(city_trimmed)
+    );
+    if let Ok(resp) = client.get(&osm_url).send().await {
+        if let Ok(json) = resp.json::<serde_json::Value>().await {
+            if let Some(first) = json.as_array().and_then(|a| a.first()) {
+                let lat = first.get("lat").and_then(|v| v.as_str()).and_then(|s| s.parse::<f64>().ok());
+                let lon = first.get("lon").and_then(|v| v.as_str()).and_then(|s| s.parse::<f64>().ok());
+                let name = first.get("name").and_then(|v| v.as_str()).unwrap_or(city_trimmed);
+                if let (Some(la), Some(lo)) = (lat, lon) {
+                    return Some((name.to_string(), la, lo));
+                }
+            }
+        }
+    }
+
+    // 3. Üçüncül: Mahalle bulunamadıysa bir üst hiyerarşi olan İlçe ve İli dene (örn: "Şirintepe, Tepebaşı, Eskişehir" -> "Tepebaşı, Eskişehir")
+    if let Some((_, parent)) = city_trimmed.split_once(',') {
+        let parent = parent.trim();
+        if !parent.is_empty() {
+            let parent_url = format!(
+                "https://geocoding-api.open-meteo.com/v1/search?name={}&count=1&language=tr&format=json",
+                percent_encode(parent)
+            );
+            if let Ok(resp) = client.get(&parent_url).send().await {
+                if let Ok(json) = resp.json::<serde_json::Value>().await {
+                    if let Some(first) = json.get("results").and_then(|r| r.as_array()).and_then(|a| a.first()) {
+                        let name = first.get("name").and_then(|v| v.as_str()).unwrap_or(parent);
+                        let lat = first.get("latitude").and_then(|v| v.as_f64());
+                        let lon = first.get("longitude").and_then(|v| v.as_f64());
+                        if let (Some(la), Some(lo)) = (lat, lon) {
+                            return Some((format!("{} ({})", city_trimmed, name), la, lo));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    None
 }
 
 async fn fetch_open_meteo(

@@ -1,0 +1,569 @@
+[
+  {
+    "plaka": 1,
+    "name": "Adana",
+    "file": "01_adana.json",
+    "district_count": 15,
+    "settlement_count": 834
+  },
+  {
+    "plaka": 2,
+    "name": "Adıyaman",
+    "file": "02_adiyaman.json",
+    "district_count": 9,
+    "settlement_count": 1195
+  },
+  {
+    "plaka": 3,
+    "name": "Afyonkarahisar",
+    "file": "03_afyonkarahisar.json",
+    "district_count": 18,
+    "settlement_count": 1210
+  },
+  {
+    "plaka": 4,
+    "name": "Ağrı",
+    "file": "04_agri.json",
+    "district_count": 8,
+    "settlement_count": 994
+  },
+  {
+    "plaka": 5,
+    "name": "Amasya",
+    "file": "05_amasya.json",
+    "district_count": 7,
+    "settlement_count": 788
+  },
+  {
+    "plaka": 6,
+    "name": "Ankara",
+    "file": "06_ankara.json",
+    "district_count": 25,
+    "settlement_count": 1436
+  },
+  {
+    "plaka": 7,
+    "name": "Antalya",
+    "file": "07_antalya.json",
+    "district_count": 19,
+    "settlement_count": 917
+  },
+  {
+    "plaka": 8,
+    "name": "Artvin",
+    "file": "08_artvin.json",
+    "district_count": 9,
+    "settlement_count": 2158
+  },
+  {
+    "plaka": 9,
+    "name": "Aydın",
+    "file": "09_aydin.json",
+    "district_count": 17,
+    "settlement_count": 674
+  },
+  {
+    "plaka": 10,
+    "name": "Balıkesir",
+    "file": "10_balikesir.json",
+    "district_count": 20,
+    "settlement_count": 1139
+  },
+  {
+    "plaka": 11,
+    "name": "Bilecik",
+    "file": "11_bilecik.json",
+    "district_count": 8,
+    "settlement_count": 410
+  },
+  {
+    "plaka": 12,
+    "name": "Bingöl",
+    "file": "12_bingol.json",
+    "district_count": 8,
+    "settlement_count": 1271
+  },
+  {
+    "plaka": 13,
+    "name": "Bitlis",
+    "file": "13_bitlis.json",
+    "district_count": 7,
+    "settlement_count": 929
+  },
+  {
+    "plaka": 14,
+    "name": "Bolu",
+    "file": "14_bolu.json",
+    "district_count": 9,
+    "settlement_count": 2135
+  },
+  {
+    "plaka": 15,
+    "name": "Burdur",
+    "file": "15_burdur.json",
+    "district_count": 11,
+    "settlement_count": 581
+  },
+  {
+    "plaka": 16,
+    "name": "Bursa",
+    "file": "16_bursa.json",
+    "district_count": 17,
+    "settlement_count": 1073
+  },
+  {
+    "plaka": 17,
+    "name": "Çanakkale",
+    "file": "17_canakkale.json",
+    "district_count": 12,
+    "settlement_count": 961
+  },
+  {
+    "plaka": 18,
+    "name": "Çankırı",
+    "file": "18_cankiri.json",
+    "district_count": 12,
+    "settlement_count": 728
+  },
+  {
+    "plaka": 19,
+    "name": "Çorum",
+    "file": "19_corum.json",
+    "district_count": 14,
+    "settlement_count": 1762
+  },
+  {
+    "plaka": 20,
+    "name": "Denizli",
+    "file": "20_denizli.json",
+    "district_count": 19,
+    "settlement_count": 621
+  },
+  {
+    "plaka": 21,
+    "name": "Diyarbakır",
+    "file": "21_diyarbakir.json",
+    "district_count": 17,
+    "settlement_count": 1052
+  },
+  {
+    "plaka": 22,
+    "name": "Edirne",
+    "file": "22_edirne.json",
+    "district_count": 9,
+    "settlement_count": 385
+  },
+  {
+    "plaka": 23,
+    "name": "Elazığ",
+    "file": "23_elazig.json",
+    "district_count": 11,
+    "settlement_count": 1643
+  },
+  {
+    "plaka": 24,
+    "name": "Erzincan",
+    "file": "24_erzincan.json",
+    "district_count": 9,
+    "settlement_count": 1101
+  },
+  {
+    "plaka": 25,
+    "name": "Erzurum",
+    "file": "25_erzurum.json",
+    "district_count": 20,
+    "settlement_count": 1189
+  },
+  {
+    "plaka": 26,
+    "name": "Eskişehir",
+    "file": "26_eskisehir.json",
+    "district_count": 14,
+    "settlement_count": 543
+  },
+  {
+    "plaka": 27,
+    "name": "Gaziantep",
+    "file": "27_gaziantep.json",
+    "district_count": 9,
+    "settlement_count": 786
+  },
+  {
+    "plaka": 28,
+    "name": "Giresun",
+    "file": "28_giresun.json",
+    "district_count": 16,
+    "settlement_count": 3160
+  },
+  {
+    "plaka": 29,
+    "name": "Gümüşhane",
+    "file": "29_gumushane.json",
+    "district_count": 6,
+    "settlement_count": 1348
+  },
+  {
+    "plaka": 30,
+    "name": "Hakkari",
+    "file": "30_hakkari.json",
+    "district_count": 5,
+    "settlement_count": 493
+  },
+  {
+    "plaka": 31,
+    "name": "Hatay",
+    "file": "31_hatay.json",
+    "district_count": 15,
+    "settlement_count": 595
+  },
+  {
+    "plaka": 32,
+    "name": "Isparta",
+    "file": "32_isparta.json",
+    "district_count": 13,
+    "settlement_count": 636
+  },
+  {
+    "plaka": 33,
+    "name": "Mersin",
+    "file": "33_mersin.json",
+    "district_count": 13,
+    "settlement_count": 811
+  },
+  {
+    "plaka": 34,
+    "name": "İstanbul",
+    "file": "34_istanbul.json",
+    "district_count": 39,
+    "settlement_count": 976
+  },
+  {
+    "plaka": 35,
+    "name": "İzmir",
+    "file": "35_izmir.json",
+    "district_count": 30,
+    "settlement_count": 1310
+  },
+  {
+    "plaka": 36,
+    "name": "Kars",
+    "file": "36_kars.json",
+    "district_count": 8,
+    "settlement_count": 552
+  },
+  {
+    "plaka": 37,
+    "name": "Kastamonu",
+    "file": "37_kastamonu.json",
+    "district_count": 20,
+    "settlement_count": 5376
+  },
+  {
+    "plaka": 38,
+    "name": "Kayseri",
+    "file": "38_kayseri.json",
+    "district_count": 16,
+    "settlement_count": 719
+  },
+  {
+    "plaka": 39,
+    "name": "Kırklareli",
+    "file": "39_kirklareli.json",
+    "district_count": 8,
+    "settlement_count": 320
+  },
+  {
+    "plaka": 40,
+    "name": "Kırşehir",
+    "file": "40_kirsehir.json",
+    "district_count": 7,
+    "settlement_count": 454
+  },
+  {
+    "plaka": 41,
+    "name": "Kocaeli",
+    "file": "41_kocaeli.json",
+    "district_count": 12,
+    "settlement_count": 488
+  },
+  {
+    "plaka": 42,
+    "name": "Konya",
+    "file": "42_konya.json",
+    "district_count": 31,
+    "settlement_count": 1161
+  },
+  {
+    "plaka": 43,
+    "name": "Kütahya",
+    "file": "43_kutahya.json",
+    "district_count": 13,
+    "settlement_count": 1010
+  },
+  {
+    "plaka": 44,
+    "name": "Malatya",
+    "file": "44_malatya.json",
+    "district_count": 13,
+    "settlement_count": 722
+  },
+  {
+    "plaka": 45,
+    "name": "Manisa",
+    "file": "45_manisa.json",
+    "district_count": 17,
+    "settlement_count": 1094
+  },
+  {
+    "plaka": 46,
+    "name": "Kahramanmaraş",
+    "file": "46_kahramanmaras.json",
+    "district_count": 11,
+    "settlement_count": 716
+  },
+  {
+    "plaka": 47,
+    "name": "Mardin",
+    "file": "47_mardin.json",
+    "district_count": 10,
+    "settlement_count": 707
+  },
+  {
+    "plaka": 48,
+    "name": "Muğla",
+    "file": "48_mugla.json",
+    "district_count": 13,
+    "settlement_count": 569
+  },
+  {
+    "plaka": 49,
+    "name": "Muş",
+    "file": "49_mus.json",
+    "district_count": 6,
+    "settlement_count": 843
+  },
+  {
+    "plaka": 50,
+    "name": "Nevşehir",
+    "file": "50_nevsehir.json",
+    "district_count": 8,
+    "settlement_count": 446
+  },
+  {
+    "plaka": 51,
+    "name": "Niğde",
+    "file": "51_nigde.json",
+    "district_count": 6,
+    "settlement_count": 450
+  },
+  {
+    "plaka": 52,
+    "name": "Ordu",
+    "file": "52_ordu.json",
+    "district_count": 19,
+    "settlement_count": 776
+  },
+  {
+    "plaka": 53,
+    "name": "Rize",
+    "file": "53_rize.json",
+    "district_count": 12,
+    "settlement_count": 1589
+  },
+  {
+    "plaka": 54,
+    "name": "Sakarya",
+    "file": "54_sakarya.json",
+    "district_count": 16,
+    "settlement_count": 675
+  },
+  {
+    "plaka": 55,
+    "name": "Samsun",
+    "file": "55_samsun.json",
+    "district_count": 17,
+    "settlement_count": 1261
+  },
+  {
+    "plaka": 56,
+    "name": "Siirt",
+    "file": "56_siirt.json",
+    "district_count": 7,
+    "settlement_count": 555
+  },
+  {
+    "plaka": 57,
+    "name": "Sinop",
+    "file": "57_sinop.json",
+    "district_count": 9,
+    "settlement_count": 2417
+  },
+  {
+    "plaka": 58,
+    "name": "Sivas",
+    "file": "58_sivas.json",
+    "district_count": 17,
+    "settlement_count": 2404
+  },
+  {
+    "plaka": 59,
+    "name": "Tekirdağ",
+    "file": "59_tekirdag.json",
+    "district_count": 11,
+    "settlement_count": 381
+  },
+  {
+    "plaka": 60,
+    "name": "Tokat",
+    "file": "60_tokat.json",
+    "district_count": 12,
+    "settlement_count": 1646
+  },
+  {
+    "plaka": 61,
+    "name": "Trabzon",
+    "file": "61_trabzon.json",
+    "district_count": 18,
+    "settlement_count": 710
+  },
+  {
+    "plaka": 62,
+    "name": "Tunceli",
+    "file": "62_tunceli.json",
+    "district_count": 8,
+    "settlement_count": 1099
+  },
+  {
+    "plaka": 63,
+    "name": "Şanlıurfa",
+    "file": "63_sanliurfa.json",
+    "district_count": 13,
+    "settlement_count": 1445
+  },
+  {
+    "plaka": 64,
+    "name": "Uşak",
+    "file": "64_usak.json",
+    "district_count": 6,
+    "settlement_count": 767
+  },
+  {
+    "plaka": 65,
+    "name": "Van",
+    "file": "65_van.json",
+    "district_count": 13,
+    "settlement_count": 694
+  },
+  {
+    "plaka": 66,
+    "name": "Yozgat",
+    "file": "66_yozgat.json",
+    "district_count": 14,
+    "settlement_count": 902
+  },
+  {
+    "plaka": 67,
+    "name": "Zonguldak",
+    "file": "67_zonguldak.json",
+    "district_count": 8,
+    "settlement_count": 1883
+  },
+  {
+    "plaka": 68,
+    "name": "Aksaray",
+    "file": "68_aksaray.json",
+    "district_count": 8,
+    "settlement_count": 472
+  },
+  {
+    "plaka": 69,
+    "name": "Bayburt",
+    "file": "69_bayburt.json",
+    "district_count": 3,
+    "settlement_count": 274
+  },
+  {
+    "plaka": 70,
+    "name": "Karaman",
+    "file": "70_karaman.json",
+    "district_count": 6,
+    "settlement_count": 467
+  },
+  {
+    "plaka": 71,
+    "name": "Kırıkkale",
+    "file": "71_kirikkale.json",
+    "district_count": 9,
+    "settlement_count": 367
+  },
+  {
+    "plaka": 72,
+    "name": "Batman",
+    "file": "72_batman.json",
+    "district_count": 6,
+    "settlement_count": 774
+  },
+  {
+    "plaka": 73,
+    "name": "Şırnak",
+    "file": "73_sirnak.json",
+    "district_count": 7,
+    "settlement_count": 404
+  },
+  {
+    "plaka": 74,
+    "name": "Bartın",
+    "file": "74_bartin.json",
+    "district_count": 4,
+    "settlement_count": 1266
+  },
+  {
+    "plaka": 75,
+    "name": "Ardahan",
+    "file": "75_ardahan.json",
+    "district_count": 6,
+    "settlement_count": 381
+  },
+  {
+    "plaka": 76,
+    "name": "Iğdır",
+    "file": "76_igdir.json",
+    "district_count": 4,
+    "settlement_count": 258
+  },
+  {
+    "plaka": 77,
+    "name": "Yalova",
+    "file": "77_yalova.json",
+    "district_count": 6,
+    "settlement_count": 147
+  },
+  {
+    "plaka": 78,
+    "name": "Karabük",
+    "file": "78_karabuk.json",
+    "district_count": 6,
+    "settlement_count": 1377
+  },
+  {
+    "plaka": 79,
+    "name": "Kilis",
+    "file": "79_kilis.json",
+    "district_count": 4,
+    "settlement_count": 304
+  },
+  {
+    "plaka": 80,
+    "name": "Osmaniye",
+    "file": "80_osmaniye.json",
+    "district_count": 7,
+    "settlement_count": 714
+  },
+  {
+    "plaka": 81,
+    "name": "Düzce",
+    "file": "81_duzce.json",
+    "district_count": 8,
+    "settlement_count": 809
+  }
+]
