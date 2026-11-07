@@ -71,9 +71,17 @@ async function setMode(mode) {
 function switchTab(tab, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  document.getElementById('tab-music').style.display = (tab === 'music') ? 'flex' : 'none';
-  document.getElementById('tab-weather').style.display = (tab === 'weather') ? 'flex' : 'none';
+  const tMusic = document.getElementById('tab-music');
+  const tWeather = document.getElementById('tab-weather');
+  const tNotify = document.getElementById('tab-notify');
+  if (tMusic) tMusic.style.display = (tab === 'music') ? 'flex' : 'none';
+  if (tWeather) tWeather.style.display = (tab === 'weather') ? 'flex' : 'none';
+  if (tNotify) tNotify.style.display = (tab === 'notify') ? 'flex' : 'none';
+  if (tab === 'notify' && window.markAllAsRead) {
+    window.markAllAsRead();
+  }
 }
+window.switchTab = switchTab;
 
 function openSettingsWindow() {
   invoke('open_settings_window');
@@ -159,7 +167,7 @@ island.addEventListener('mouseleave', () => {
 });
 
 island.addEventListener('click', (e) => {
-  if (e.target.closest('button') || e.target.closest('.vol-slider-track') || e.target.closest('.track-progress-bar') || e.target.closest('.exit-dialog')) return;
+  if (e.target.closest('button') || e.target.closest('.vol-slider-track') || e.target.closest('.track-progress-bar') || e.target.closest('.exit-dialog') || e.target.closest('.header-notify-ticker') || e.target.closest('.notify-card')) return;
   if (collapseTimeout) clearTimeout(collapseTimeout);
 
   if (currentMode === 'bar') {

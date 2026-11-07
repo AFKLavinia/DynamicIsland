@@ -47,6 +47,8 @@ pub struct MusicData {
     pub spotify_available: bool,
     pub position_secs: u32,
     pub duration_secs: u32,
+    pub volume: Option<u32>,
+    pub muted: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]

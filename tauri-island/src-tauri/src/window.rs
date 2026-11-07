@@ -3,17 +3,35 @@ use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
 #[tauri::command]
 pub async fn open_settings_window(app_handle: tauri::AppHandle) -> Result<(), String> {
-    if let Some(settings_win) = app_handle.get_webview_window("settings") {
-        let _ = settings_win.show();
-        let _ = settings_win.set_focus();
+    let settings_win = if let Some(win) = app_handle.get_webview_window("settings") {
+        let _ = win.show();
+        let _ = win.set_focus();
+        win
     } else {
-        let _ = WebviewWindowBuilder::new(&app_handle, "settings", WebviewUrl::App("settings.html".into()))
+        WebviewWindowBuilder::new(&app_handle, "settings", WebviewUrl::App("settings.html".into()))
             .title("AFK Dynamic Island Ayarları")
             .inner_size(720.0, 520.0)
             .resizable(false)
             .center()
             .always_on_top(false)
-            .build();
+            .build()
+            .map_err(|e| e.to_string())?
+    };
+
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Win32::UI::WindowsAndMessaging::{SetWindowPos, HWND_NOTOPMOST, SWP_NOMOVE, SWP_NOSIZE, SWP_NOACTIVATE};
+        use windows::Win32::Foundation::HWND;
+        if let Ok(hwnd) = settings_win.hwnd() {
+            unsafe {
+                let _ = SetWindowPos(
+                    HWND(hwnd.0),
+                    HWND_NOTOPMOST,
+                    0, 0, 0, 0,
+                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE,
+                );
+            }
+        }
     }
     Ok(())
 }

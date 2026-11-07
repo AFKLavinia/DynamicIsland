@@ -137,6 +137,11 @@ async function checkMusic() {
     window.currentHasMusic = hasActiveSession;
     isPlaying = !!(m && m.playing);
     currentSpotifyAvailable = !!(m && m.spotify_available);
+    window.currentMediaApp = (m && m.app) ? m.app : '';
+
+    if (m && typeof m.volume === 'number' && window.syncVolumeFromBackend) {
+      window.syncVolumeFromBackend(m.volume, m.muted);
+    }
 
     // 1. Kompakt Ön İzleme Yönetimi (Fareyle üzerine gelindiğinde)
     if (currentHasMusic) {

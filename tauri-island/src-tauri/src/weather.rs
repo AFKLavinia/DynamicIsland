@@ -607,3 +607,14 @@ pub async fn set_city(city: String, app: tauri::AppHandle, state: State<'_, AppS
     let _ = app.emit("weather-refresh", ());
     Ok(city)
 }
+
+#[tauri::command]
+pub async fn save_weather_location(
+    city: Option<String>,
+    location: Option<String>,
+    app: tauri::AppHandle,
+    state: State<'_, AppState>,
+) -> Result<String, String> {
+    let loc = city.or(location).unwrap_or_default();
+    set_city(loc, app, state).await
+}

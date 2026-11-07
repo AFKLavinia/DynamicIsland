@@ -50,24 +50,120 @@ mod sysmedia {
     };
     use windows::Storage::Streams::DataReader;
 
+    fn is_dedicated_music_app(app_id: &str) -> bool {
+        let low = app_id.to_lowercase();
+        low.contains("spotify")
+            || low.contains("vlc")
+            || low.contains("musicbee")
+            || low.contains("foobar2000")
+            || low.contains("aimp")
+            || low.contains("applemusic")
+            || low.contains("apple music")
+            || low.contains("tidal")
+            || low.contains("deezer")
+            || low.contains("groove")
+    }
+
     fn pick_session(manager: &SessionManager) -> Option<Session> {
+        let current_playing = manager
+            .GetCurrentSession()
+            .ok()
+            .filter(|s| {
+                s.GetPlaybackInfo()
+                    .and_then(|i| i.PlaybackStatus())
+                    .map(|p| p == PlaybackStatus::Playing)
+                    .unwrap_or(false)
+            });
+
+        let mut playing_music = None;
+        let mut playing_other = None;
+        let mut paused_music = None;
         let mut first = None;
+
         if let Ok(list) = manager.GetSessions() {
             for s in list {
+                let app = s.SourceAppUserModelId().map(|h| h.to_string()).unwrap_or_default();
+                let is_music = is_dedicated_music_app(&app);
                 let playing = s
                     .GetPlaybackInfo()
                     .and_then(|i| i.PlaybackStatus())
                     .map(|p| p == PlaybackStatus::Playing)
                     .unwrap_or(false);
+
                 if playing {
-                    return Some(s);
+                    if is_music && playing_music.is_none() {
+                        playing_music = Some(s.clone());
+                    } else if playing_other.is_none() {
+                        playing_other = Some(s.clone());
+                    }
+                } else if is_music && paused_music.is_none() {
+                    paused_music = Some(s.clone());
                 }
+
                 if first.is_none() {
                     first = Some(s);
                 }
             }
         }
+
+        // 1. Çalan adanmış müzik çalar (Spotify, Apple Music, VLC vb.)
+        if let Some(s) = playing_music {
+            return Some(s);
+        }
+
+        // 2. Windows'un aktif odaklı çalan oturumu
+        if let Some(s) = current_playing {
+            return Some(s);
+        }
+
+        // 3. Herhangi bir çalan oturum (tarayıcı vs.)
+        if let Some(s) = playing_other {
+            return Some(s);
+        }
+
+        // 4. Duraklatılmış adanmış müzik çalar
+        if let Some(s) = paused_music {
+            return Some(s);
+        }
+
+        // 5. Windows GetCurrentSession veya ilk oturum
         manager.GetCurrentSession().ok().or(first)
+    }
+
+    fn get_image_dimensions(bytes: &[u8]) -> Option<(u32, u32)> {
+        if bytes.len() >= 24 && &bytes[0..8] == b"\x89PNG\r\n\x1a\n" {
+            let w = u32::from_be_bytes(bytes[16..20].try_into().ok()?);
+            let h = u32::from_be_bytes(bytes[20..24].try_into().ok()?);
+            return Some((w, h));
+        }
+        if bytes.len() >= 4 && bytes[0] == 0xFF && bytes[1] == 0xD8 {
+            let mut i = 2;
+            while i + 9 < bytes.len() {
+                if bytes[i] != 0xFF {
+                    i += 1;
+                    continue;
+                }
+                let marker = bytes[i + 1];
+                if marker == 0xC0 || marker == 0xC1 || marker == 0xC2 {
+                    let h = u16::from_be_bytes([bytes[i + 5], bytes[i + 6]]) as u32;
+                    let w = u16::from_be_bytes([bytes[i + 7], bytes[i + 8]]) as u32;
+                    return Some((w, h));
+                }
+                if marker == 0xDA || marker == 0xD9 {
+                    break;
+                }
+                if i + 3 < bytes.len() {
+                    let len = u16::from_be_bytes([bytes[i + 2], bytes[i + 3]]) as usize;
+                    if len < 2 {
+                        break;
+                    }
+                    i += 2 + len;
+                } else {
+                    break;
+                }
+            }
+        }
+        None
     }
 
     fn read_thumbnail(props: &MediaProps) -> Option<Vec<u8>> {
@@ -90,7 +186,8 @@ mod sysmedia {
 
         let app = session.SourceAppUserModelId().map(|h| h.to_string()).unwrap_or_default();
         let props = session.TryGetMediaPropertiesAsync().ok()?.get().ok()?;
-        let mut title = props.Title().map(|h| h.to_string()).unwrap_or_default();
+        let raw_title = props.Title().map(|h| h.to_string()).unwrap_or_default();
+        let mut title = raw_title.clone();
         let mut artist = props.Artist().map(|h| h.to_string()).unwrap_or_default();
         if title.trim().is_empty() {
             return None;
@@ -123,9 +220,31 @@ mod sysmedia {
         let art = if !skip_key.is_empty() && key == skip_key {
             Art::Skip
         } else {
-            match read_thumbnail(&props) {
-                Some(bytes) => Art::Bytes(bytes),
-                None => Art::None,
+            let thumb = read_thumbnail(&props);
+            if is_browser {
+                if let Some(bytes) = thumb {
+                    // Tarayıcı oturumlarında video kareleri (16:9 geniş ekran) ile gerçek müzik albüm kapaklarını (kare ~1:1) ayırt et:
+                    // Bir şarkı çalarken tarayıcının açık video sekmesinden sızdırdığı 16:9 ekran görüntüsünü (örn: Helluva Boss) reddet!
+                    if let Some((w, h)) = get_image_dimensions(&bytes) {
+                        let ratio = w as f32 / (h.max(1) as f32);
+                        if ratio > 1.32 {
+                            // 16:9 / geniş ekran video yakalaması -> Gerçek albüm kapağı değil, sızan video karesi.
+                            Art::None
+                        } else {
+                            // Kare (1:1) gerçek albüm kapağı (Spotify Web, SoundCloud, Apple Music)
+                            Art::Bytes(bytes)
+                        }
+                    } else {
+                        Art::None
+                    }
+                } else {
+                    Art::None
+                }
+            } else {
+                match thumb {
+                    Some(bytes) => Art::Bytes(bytes),
+                    None => Art::None,
+                }
             }
         };
 
@@ -418,9 +537,12 @@ pub async fn check_music() -> Result<MusicData, String> {
         .flatten();
 
     let Some(raw) = raw else {
+        let (vol, muted) = crate::audio::get_app_volume_info("");
         return Ok(MusicData {
             has_music: false,
             spotify_available: check_spotify_cached(),
+            volume: Some(vol),
+            muted: Some(muted),
             ..Default::default()
         });
     };
@@ -461,6 +583,8 @@ pub async fn check_music() -> Result<MusicData, String> {
         }
     };
 
+    let (vol, muted) = crate::audio::get_app_volume_info(&raw.app);
+
     Ok(MusicData {
         has_music: true,
         playing: raw.playing,
@@ -472,6 +596,8 @@ pub async fn check_music() -> Result<MusicData, String> {
         spotify_available: true,
         position_secs: raw.position_secs,
         duration_secs: raw.duration_secs,
+        volume: Some(vol),
+        muted: Some(muted),
     })
 }
 

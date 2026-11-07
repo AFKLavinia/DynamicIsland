@@ -602,12 +602,13 @@ html, body {
 }
 .vol-slider-track {
   flex: 1;
-  height: 5px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.16);
   border-radius: 3px;
   cursor: pointer;
   overflow: hidden;
   position: relative;
+  user-select: none;
 }
 .vol-slider-fill {
   height: 100%;
@@ -825,4 +826,299 @@ html, body {
 .exit-btn.confirm:hover {
   background: #ff3b30;
   box-shadow: 0 2px 10px rgba(255, 69, 58, 0.4);
+}
+
+/* ==========================================================================
+   Bildirimler ve Canlı Header Ticker Stilleri (Windows 11 Fluent)
+   ========================================================================== */
+
+/* Header İçi Canlı Bildirim Ticker (Ortadaki Boşluğu Dolduran Modern Çip) */
+.header-notify-ticker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  max-width: 210px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.header-notify-ticker:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 205, 255, 0.3);
+  transform: translateY(-1px);
+}
+.ticker-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #30d158;
+  box-shadow: 0 0 6px #30d158;
+  flex-shrink: 0;
+}
+.ticker-msg-text {
+  font-size: 11px;
+  color: #aeaeb2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+.header-notify-ticker:hover .ticker-msg-text {
+  color: #ffffff;
+}
+
+/* Tab unread badge */
+.notify-unread-badge {
+  font-size: 9px;
+  font-weight: 700;
+  background: #ff453a;
+  color: #ffffff;
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 3px;
+  line-height: 1.2;
+}
+
+/* Müzik paneli içi kompakt bildirim çipi */
+.music-inline-notify {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  max-width: 170px;
+  overflow: hidden;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+.music-inline-notify:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(96, 205, 255, 0.25);
+}
+.music-inline-notify svg {
+  width: 11px;
+  height: 11px;
+  stroke: #60cdff;
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+.music-inline-notify span {
+  font-size: 10px;
+  color: #aeaeb2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+.music-inline-notify:hover span {
+  color: #ffffff;
+}
+
+/* Bildirimler Sekme Paneli */
+.notify-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+.notify-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 4px;
+}
+.notify-panel-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff;
+}
+.notify-count-pill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #aeaeb2;
+}
+.btn-clear-notify {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #8e8e93;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+.btn-clear-notify:hover {
+  color: #ff453a;
+  background: rgba(255, 69, 58, 0.1);
+}
+
+.notify-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-height: 132px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.notify-list-container::-webkit-scrollbar {
+  width: 3px;
+}
+.notify-list-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+/* Bildirim Kartı */
+.notify-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  transition: all 0.15s ease;
+}
+.notify-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.notify-card.unread {
+  border-left: 3px solid var(--win-accent, #60cdff);
+}
+.notify-card-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.notify-card-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  color: #60cdff;
+}
+.notify-card-icon.weather svg { color: #ffd60a; }
+.notify-card-icon.media svg { color: #30d158; }
+.notify-card-icon.battery svg { color: #ff9f0a; }
+
+.notify-card-content {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+.notify-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.notify-app-name {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #aeaeb2;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.notify-time {
+  font-size: 9.5px;
+  color: #636366;
+}
+.notify-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 1px;
+}
+.notify-body {
+  font-size: 11px;
+  color: #aeaeb2;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.notify-dismiss-btn {
+  background: transparent;
+  border: none;
+  color: #636366;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.12s;
+}
+.notify-dismiss-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+.notify-dismiss-btn svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.notify-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 110px;
+  color: #636366;
+  gap: 6px;
+}
+.notify-empty-state svg {
+  width: 28px;
+  height: 28px;
+  stroke: #48484a;
+  fill: none;
+  stroke-width: 1.5;
+}
+.notify-empty-state p {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #aeaeb2;
+  margin: 0;
+}
+.notify-empty-state span {
+  font-size: 11px;
+  color: #636366;
 }
